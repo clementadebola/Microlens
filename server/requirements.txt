@@ -1,0 +1,9 @@
+google.generativeai
+Flask
+Flask-Cors
+numpy
+pillow
+scikit-image
+gunicorn
+requests
+pydantic
