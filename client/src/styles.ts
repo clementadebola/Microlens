@@ -12,6 +12,7 @@ export const Container = styled.div`
   max-width: 600px;
   height: 100vh;
   margin: 0 auto;
+  overflow-y:hidden;
 `;
 
 export const AnimatedPage = animated(styled.div`
@@ -77,10 +78,11 @@ export const Input = styled.input`
 `;
 
 export const Form = styled.form`
-  width: 100%;
+  width: 90%;
   display: flex;
   flex-direction: column;
   justify-content: center;
+
 `;
 
 export const ErrorMessage = styled.p`

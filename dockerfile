@@ -11,7 +11,7 @@ WORKDIR /app/client
 # Install dependencies
 RUN npm install --legacy-peer-deps
 
-# Build the project
+
 RUN npm run build
 
 # Server stage

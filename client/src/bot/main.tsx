@@ -20,6 +20,7 @@ const Container = styled.div`
   background-color: ${(props) => props.theme.colors.background};
   z-index: 1000;
   top: 0;
+  left:0;
   transform: translate(-50%, -50%);
   height: 100%;
   display: flex;
@@ -349,7 +350,6 @@ const Bot: React.FC = () => {
           {messageLoading && (
             <div
               style={{
-                marginLeft: "15px",
                 background: "rgba(72, 89, 105, 0.9)",
                 width: "fit-content",
                 padding: "0.65rem 0.9rem",

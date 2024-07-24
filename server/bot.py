@@ -1,7 +1,7 @@
 import google.generativeai as genai
 from flask import abort
 import os
-genai.configure(api_key=os.getenv('GOOGLE_GEMINI_KEY'))
+genai.configure(api_key='AIzaSyD2sCWYP85Ov8kJlBSbyBoOaH3Iv7vBorQ')
 model = genai.GenerativeModel('gemini-pro')
 vision_model = genai.GenerativeModel('gemini-1.5-flash')
 

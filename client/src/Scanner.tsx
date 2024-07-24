@@ -108,7 +108,7 @@ const ControlsContainer = styled.div`
 
 const IconButton = styled.button`
   position: relative;
-  z-index: 1000;
+  z-index: 100;
   width: 50px;
   height: 50px;
   border-radius: 50%;
@@ -192,9 +192,23 @@ const CloseButton = styled(IconButton)`
   font-size: 18px;
   margin-top: 10px;
   margin-bottom: 20px;
-  z-index: 1000;
+  z-index: 1001;
 `;
-
+const CloseButtonH = styled.button`
+position:absolute;
+z-index:50;
+width: 30px;
+height: 30px;
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: transparent;
+cursor: pointer;
+color: #ffffff;
+font-size: 18px;
+margin-top: 10px;
+margin-bottom: 20px;
+`;
 const TriggerCont = styled.div`
   position: absolute;
   top: 10px;
@@ -606,9 +620,9 @@ const Scanner: React.FC = () => {
     <Container>
       {isScanning && !showSettings && !showHistory ? (
         <CameraView>
-          <CloseButton onClick={() => navigate("/")}>
+          <CloseButtonH onClick={() => navigate("/")}>
             <FaArrowLeft color="#ccc" size={22} />
-          </CloseButton>
+          </CloseButtonH>
           <Video ref={videoRef} autoPlay playsInline />
           <ScannerFocus>
             <TopLeft />

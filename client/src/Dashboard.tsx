@@ -35,7 +35,8 @@ const DashboardContainer = styled(animated.div)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  min-height: 100vh;
+  height: 100vh;
+ overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
   padding: ${(props) => props.theme.spacing.large};
   .med-history {
@@ -312,7 +313,12 @@ const Dashboard: React.FC = () => {
           </Button>
         )}
       </SettingItem>
-      <Bot/>
+    <SettingItem>
+     
+    </SettingItem>
+    <div style={{padding:'10px',width:'100%',marginLeft:"10%",marginTop:"30%"}}>
+    <Bot/>
+    </div>
     </DashboardContainer>
   );
 };
