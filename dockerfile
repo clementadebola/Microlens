@@ -22,12 +22,12 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY server/ .
 
+# Create static directory and copy client build
 RUN mkdir -p static
-
 COPY --from=client-build /app/client/dist /app/server/static
 
 ENV FLASK_APP=main.py
-ENV ENV=production
+ENV FLASK_ENV=production
 
 EXPOSE 8000
 
