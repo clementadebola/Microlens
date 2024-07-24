@@ -1,18 +1,21 @@
 # Client build stage
-FROM node:20 as client-build
+FROM node:20-alpine as client-build
 
 WORKDIR /app/client
 
+# Copy package.json and package-lock.json (if available)
 COPY client/package*.json ./
 
-RUN npm install
+# Clear npm cache, install dependencies with error logging
+RUN npm cache clean --force && \
+    npm install --verbose || (cat /root/.npm/_logs/*-debug.log && exit 1)
 
 COPY client/ .
 
 RUN npm run build
 
 # Server stage
-FROM python:3.9
+FROM python:3.9-slim
 
 WORKDIR /app/server
 
