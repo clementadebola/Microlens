@@ -1,33 +1,34 @@
 # Client build stage
 FROM node:20-alpine as client-build
 
+WORKDIR /app
+
+# Copy the entire client directory
+COPY client ./client
+
 WORKDIR /app/client
 
-# Copy package.json and package-lock.json (if available)
-COPY client/package*.json ./
+# Install dependencies
+RUN npm install --legacy-peer-deps
 
-# Clear npm cache, install dependencies with error logging
-RUN npm cache clean --force && \
-    npm install --verbose || (cat /root/.npm/_logs/*-debug.log && exit 1)
-
-COPY client/ .
-
+# Build the project
 RUN npm run build
 
 # Server stage
 FROM python:3.9-slim
 
-WORKDIR /app/server
+WORKDIR /app
 
-COPY server/requirements.txt .
+# Copy the entire server directory
+COPY server ./server
+
+WORKDIR /app/server
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY server/ .
-
 # Create static directory and copy client build
 RUN mkdir -p static
-COPY --from=client-build /app/client/dist /app/server/static
+COPY --from=client-build /app/client/dist ./static
 
 ENV FLASK_APP=main.py
 ENV FLASK_ENV=production
