@@ -190,8 +190,8 @@ const CloseButton = styled(IconButton)`
   cursor: pointer;
   color: #ffffff;
   font-size: 18px;
-  margin-top: 10px;
-  margin-bottom: 20px;
+  margin-top: 5px;
+  margin-bottom:10px;
   z-index: 1001;
 `;
 const CloseButtonH = styled.button`
@@ -283,7 +283,7 @@ const ModalContent = styled.div`
   padding: 20px;
   border-radius: 10px;
   color: #ffffff;
-  max-width: 80%;
+  max-width: 90%;
   max-height: 80%;
   overflow-y: auto;
 `;
@@ -839,8 +839,8 @@ const Scanner: React.FC = () => {
             <ul
               style={{
                 listStyle: "roman",
-                padding: "10px 20px",
-                fontSize: "13px",
+                padding: "5px 10px",
+                fontSize: "14px",
               }}
             >
               <h3>#Option 1</h3>

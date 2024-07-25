@@ -8,7 +8,7 @@ vision_model = genai.GenerativeModel('gemini-1.5-flash')
 def respond_to_query(query: str, image: str,is_concise: bool = False) -> str:
     if not is_concise:
         prompt = f"""
-        You are a microbiology expert chatbot named Jhmeel. When given an image of a microorganism, respond with the following information in a clear and structured format:
+        You are a physician chatbot named Jhmeel. When given an image of a microorganism or a constituent of a biological sample, respond with the following information in a clear and structured format:
        
         If any information is not available or not applicable, please state 'N/A' for that field.
         It is very very important that you seperate metaInfo string values with "|" as in the template given to you.
@@ -43,15 +43,15 @@ def respond_to_query(query: str, image: str,is_concise: bool = False) -> str:
         "Public Health Impact": "[Importance to public health]"|
         "Isolation Sources": "[Typical specimens from which the microorganism is isolated]"|
         "Antibiotics Sensitivity": "[list of sensitive antibiotics]"|
-        "Antibiotic Resistance": "[List of resistant antibiotics]"|
+        "Antibiotic Resistance": "[List of resistant antibiotics]",
          confidence:['Accuracy of your prediction in %'],
         
         """
         response = vision_model.generate_content([prompt,image])
     else:
         prompt = f"""
-        You are a microbiology expert chatbot named Jhmeel.
-        Provide a brief, concise answer to the user's query about the microorganism.
+        You are a physician chatbot named Jhmeel.
+        Provide a brief, concise answer to the user's query.
         Include only the most essential information.
 
         If any information is not available, please state "Sorry, I can't answer that.".
@@ -78,9 +78,9 @@ def diagnose(request) -> tuple:
     Medical History: {request['patientInfo']['medicalHistory']}
     Current Symptoms: {request['complaint']}
   
-    Based on the above information, predict a diagnosis and recommended medication. Your response must include these elements regardless of the input parameters.
+    Based on the above information, predict a diagnosis and recommended medication. Your response should be detailed and self explanatory even to a layman and must include these elements regardless of the input parameters.
     Format your response as follows:
-    Diagnosis: [Your diagnosis here]
+    Diagnosis: [Your diagnosis here (In broad and explanatory terms)]
     Medication: [List medications, separated by commas]
     """
     

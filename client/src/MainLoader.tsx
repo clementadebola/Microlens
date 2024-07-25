@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 import { bouncy } from "ldrs";
 import logo from "./assets/logo.jpg";
+
 const LoaderRenderer = styled.div`
   width: 100%;
   height: 100vh;

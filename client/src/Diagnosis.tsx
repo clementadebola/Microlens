@@ -29,18 +29,19 @@ const DiagnosisContainer = styled(animated.div)`
   flex-direction: column;
   align-items: center;
   background-color: ${(props) => props.theme.colors.background};
-  justify-content: center;
+  justify-content: space-;
   min-height: 100vh;
   padding: ${(props) => props.theme.spacing.large};
+  padding-top:5.5rem;
 `;
 
 const InputContainer = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
   width: 100%;
-  margin-top: ${(props) => props.theme.spacing.large};
+  margin-top: ${(props) => props.theme.spacing.large}+20;
 `;
 
 const InputToggle = styled.div`
@@ -134,6 +135,7 @@ const DiagnosisPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef(new Audio(lisen));
   const [transcriptVal, setTranscriptVal] = useState("")
+  const [currentUserPayload, setCurrentUserPayload] = useState(null)
   const navigate = useNavigate();
 
   const containerAnimation = useSpring({
@@ -148,6 +150,7 @@ const DiagnosisPage: React.FC = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setSelectedVoice(docSnap.data().selectedVoice);
+          setCurrentUserPayload(docSnap.data())
         }
       }
     };
@@ -234,14 +237,16 @@ const DiagnosisPage: React.FC = () => {
   if (!browserSupportsSpeechRecognition) {
     return <span>Your browser doesn't support speech recognition.</span>;
   }
-
+  const userGender = currentUserPayload?.gender.toLowerCase()
+    const title = userGender == 'male'?'Mr': userGender == 'female'?'Mrs':''
+    const greetings =  `Good day ${title} ${currentUser?.displayName?.split(' ')[0] || currentUser?.email.split('@')[0]}, how may I help you today?` 
 
   return (
     <DiagnosisContainer style={containerAnimation}>
       <BackButton onClick={() => navigate("/")}>
         <FaArrowLeft color="gray" size={22} />
       </BackButton>
-      <h3>How may I help you today?</h3>
+      <h3 style={{textAlign:'center'}}>{greetings}</h3>
       <Druid />
       <InputContainer>
         <InputToggle>
@@ -265,7 +270,7 @@ const DiagnosisPage: React.FC = () => {
           <>
             {inputMethod === "voice" && (
               <span className="dots_loader" onClick={toggleListening}>
-                {listening ? "Stop Listening" : "Click and Start Speaking"}
+                {listening ? "Click to Stop Listening" : "Click and Start Speaking"}
               </span>
             )}
             {listening && (

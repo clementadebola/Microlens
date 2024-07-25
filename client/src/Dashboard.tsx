@@ -177,7 +177,7 @@ const Dashboard: React.FC = () => {
         navigate('/auth')
     }
     const getPev = async () => {
-      const docRef = doc(db, "patients", currentUser.uid);
+      const docRef = doc(db, "patients", currentUser?.uid);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         const patientInfo = docSnap.data();
