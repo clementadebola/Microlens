@@ -192,8 +192,6 @@ const DiagnosisPage: React.FC = () => {
   const speakDiagnosis = (diagnosisData: any) => {
     const text = `Your diagnosis is ${
       diagnosisData.diagnosis
-    }. The prognosis is ${
-      diagnosisData.prognosis
     }. Recommended medications are ${diagnosisData.medication.join(", ")}.`;
     speak({
       text,
