@@ -10,6 +10,7 @@ import { db } from "./firebase";
 import toast from "react-hot-toast";
 import { mirage } from "ldrs";
 import { BackButton } from "./styles";
+import Div100vh from 'react-div-100vh'
 
 const OnboardingContainer = styled(animated.div)`
   display: flex;
@@ -19,7 +20,7 @@ const OnboardingContainer = styled(animated.div)`
   justify-content: center;
   margin: 0 auto;
   background-color: ${(props) => props.theme.colors.background};
-  min-height: 100vh;
+  height: 100%;
   padding: ${(props) => props.theme.spacing.medium};
 `;
 
@@ -274,7 +275,8 @@ const Onboarding: React.FC = () => {
   };
 
   return (
-    <OnboardingContainer style={containerAnimation}>
+    <Div100vh>
+<OnboardingContainer style={containerAnimation}>
       {isUpdate && (
         <BackButton onClick={() => navigate("/")}>
           <FaArrowLeft color="gray" size={22} />
@@ -364,6 +366,8 @@ const Onboarding: React.FC = () => {
         </AnimatedPage>
       )}
     </OnboardingContainer>
+    </Div100vh>
+    
   );
 };
 

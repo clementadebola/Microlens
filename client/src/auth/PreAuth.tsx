@@ -13,6 +13,7 @@ import { auth } from "../firebase";
 import toast from "react-hot-toast";
 import { parseError } from "../utils";
 import { useAuth } from "../context/authContext";
+import Div100vh from 'react-div-100vh'
 
 const Auth: React.FC = () => {
   const { currentUser } = useAuth();
@@ -33,7 +34,8 @@ const Auth: React.FC = () => {
     }
   };
   return (
-    <Container>
+    <Div100vh>
+<Container>
       <Logo src={logo} alt="Microlens" />
       <FederatedButton onClick={handleGoogleSignIn}>
         <svg
@@ -70,6 +72,8 @@ const Auth: React.FC = () => {
         Don't have an account? <span style={{ color: "#dc3c34" }}>Sign up</span>
       </StyledLink>
     </Container>
+    </Div100vh>
+    
   );
 };
 

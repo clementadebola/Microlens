@@ -22,12 +22,13 @@ import Bot from "./bot/main";
 import { IScannedResult } from "./types";
 import { useAuth } from "./context/authContext";
 import localforage from "localforage";
+import Div100vh from 'react-div-100vh'
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  height: 100vh;
-    max-width: 600px;
+  height: 100%;
+  max-width: 600px;
   background-color: ${(props) => props.theme.colors.background};
   color: #fff;
   margin: 0 auto;
@@ -617,7 +618,9 @@ const Scanner: React.FC = () => {
   });
 
   return (
-    <Container>
+
+    <Div100vh>
+<Container>
       {isScanning && !showSettings && !showHistory ? (
         <CameraView>
           <CloseButtonH onClick={() => navigate("/")}>
@@ -860,6 +863,9 @@ const Scanner: React.FC = () => {
       )}
       <Bot />
     </Container>
+
+    </Div100vh>
+    
   );
 };
 

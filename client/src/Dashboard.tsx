@@ -10,6 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { reportBugHelper } from "./utils";
 import { FaUserDoctor } from "react-icons/fa6";
 import toast from "react-hot-toast";
+import Div100vh from 'react-div-100vh'
 import {
   AnimatedPage,
   SettingItem,
@@ -35,7 +36,7 @@ const DashboardContainer = styled(animated.div)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  height: 100vh;
+  height: 100%;
  overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
   padding: ${(props) => props.theme.spacing.medium};
@@ -211,7 +212,8 @@ const Dashboard: React.FC = () => {
   }, []);
 
   return (
-    <DashboardContainer style={containerAnimation}>
+    <Div100vh>
+ <DashboardContainer style={containerAnimation}>
       <UserAvatar />
       <div className="med-history">
         <span className="history-edit" onClick={()=>navigate('/onboarding')}>Edit<AiFillEdit /></span>
@@ -318,6 +320,10 @@ const Dashboard: React.FC = () => {
     <Bot/>
     </div>
     </DashboardContainer>
+
+
+    </Div100vh>
+   
   );
 };
 

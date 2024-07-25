@@ -10,7 +10,7 @@ export const Container = styled.div`
   background-color: ${(props) => props.theme.colors.background};
   padding: 20px;
   max-width: 600px;
-  height: 100vh;
+  height: 100%;
   margin: 0 auto;
   overflow-y:hidden;
 `;

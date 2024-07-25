@@ -11,6 +11,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../firebase";
 import logo from "../assets/logo.jpg";
+import Div100vh from 'react-div-100vh'
 import {
   Container,
   Logo,
@@ -81,7 +82,8 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Div100vh>
+<Container>
       <BackButton onClick={() => navigate("/auth")}>
         <FaArrowLeft size={22} color="#ccc"/>
       </BackButton>
@@ -151,6 +153,9 @@ const SignUp: React.FC = () => {
       </Form>
       <StyledLink to="/signin">Already have an account? Sign in</StyledLink>
     </Container>
+
+    </Div100vh>
+    
   );
 };
 

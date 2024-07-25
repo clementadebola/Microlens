@@ -21,6 +21,7 @@ import {
 import { BackButton } from "./styles";
 import { useNavigate } from "react-router-dom";
 import { mirage } from "ldrs";
+import Div100vh from 'react-div-100vh'
 
 const DiagnosisContainer = styled(animated.div)`
   display: flex;
@@ -30,7 +31,7 @@ const DiagnosisContainer = styled(animated.div)`
   align-items: center;
   background-color: ${(props) => props.theme.colors.background};
   justify-content: space-;
-  min-height: 100vh;
+  height: 100%;
   padding: ${(props) => props.theme.spacing.large};
   padding-top:5.5rem;
 `;
@@ -242,7 +243,9 @@ const DiagnosisPage: React.FC = () => {
     const greetings =  `Good day ${title} ${currentUser?.displayName?.split(' ')[0] || currentUser?.email.split('@')[0]}, how may I help you today?` 
 
   return (
-    <DiagnosisContainer style={containerAnimation}>
+    <Div100vh>
+
+<DiagnosisContainer style={containerAnimation}>
       <BackButton onClick={() => navigate("/")}>
         <FaArrowLeft color="gray" size={22} />
       </BackButton>
@@ -312,6 +315,8 @@ const DiagnosisPage: React.FC = () => {
       )}
 
     </DiagnosisContainer>
+    </Div100vh>
+    
   );
 };
 

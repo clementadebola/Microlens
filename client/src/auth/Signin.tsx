@@ -10,6 +10,7 @@ import logo from "../assets/logo.jpg";
 import { Container, Logo, Button, BackButton, Input,FederatedButton, Form, ErrorMessage, StyledLink, PasswordInputWrapper, PasswordToggle } from "../styles";
 import { parseError } from "../utils";
 import { useAuth } from "../context/authContext";
+import Div100vh from 'react-div-100vh'
 
 interface FormData {
   email: string;
@@ -63,7 +64,8 @@ const SignIn: React.FC = () => {
   };
 
   return (
-    <Container>
+    <Div100vh>
+<Container>
       <BackButton onClick={() => navigate("/auth")}>
         <FaArrowLeft size={22} color="#ccc"/>
       </BackButton>
@@ -119,6 +121,8 @@ const SignIn: React.FC = () => {
       <StyledLink to="/forgot-password">Forgot password?</StyledLink>
       <StyledLink to="/signup">Don't have an account? Sign up</StyledLink>
     </Container>
+    </Div100vh>
+    
   );
 };
 
