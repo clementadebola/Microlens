@@ -334,9 +334,9 @@ const Onboarding: React.FC = () => {
         </Form>
       ) : (
         <AnimatedPage style={voiceSelectionAnimation}>
-          <CloseButton onClick={() => setShowVoiceModal(false)}>
-            <FaArrowLeft />
-          </CloseButton>
+          <BackButton onClick={() => setShowVoiceModal(false)}>
+            <FaArrowLeft fill="#ccc" />
+          </BackButton>
           <FormTitle>Select a Voice</FormTitle>
           {availableVoices.map((voice) => (
             <VoiceOption key={voice.name} onClick={() => speakOutLoud(voice)}>

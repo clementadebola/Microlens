@@ -22,7 +22,7 @@ export const AnimatedPage = animated(styled.div`
   right: 0;
   bottom: 0;
   background-color: ${(props) => props.theme.colors.background};
-  padding: ${(props) => props.theme.spacing.small} ${(props) => props.theme.spacing.medium};
+  padding:${(props) => props.theme.spacing.small} ;
   color: #ffffff;
   overflow-y: auto;
 `);

@@ -159,7 +159,7 @@ const OptionButton = styled.button`
 const CollapsedButton = styled.button`
   position: fixed;
   bottom: 100px;
-  right: 0;
+  right: 30px;
   background-color: transparent;
   color: #7eacb5;
   border: 1px solid ${(props) => props.theme.colors.primary};
@@ -173,6 +173,10 @@ const CollapsedButton = styled.button`
   cursor: pointer;
   transition: all 0.3s ease;
 
+  @media (max-width: 768px) {
+     right: 10px;
+
+}
   &:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);

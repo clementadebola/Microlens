@@ -35,14 +35,14 @@ const DashboardContainer = styled(animated.div)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  max-height: 100vh;
+  height: 100vh;
  overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
-  padding: ${(props) => props.theme.spacing.large};
+  padding: ${(props) => props.theme.spacing.medium};
   .med-history {
     width: 100%;
     position: relative;
-    padding: ${(props) => props.theme.spacing.large};
+    padding: ${(props) => props.theme.spacing.small};
     border: 1px solid ${(props) => props.theme.colors.secondary};
     display: flex;
     flex-direction: column;
@@ -216,7 +216,7 @@ const Dashboard: React.FC = () => {
       <div className="med-history">
         <span className="history-edit" onClick={()=>navigate('/onboarding')}>Edit<AiFillEdit /></span>
         <span>Age ー {patientInfo.age || "N/A"}</span>
-        <span>Gender ー{patientInfo.gender || "N/A"}</span>
+        <span>Gender ー {patientInfo.gender || "N/A"}</span>
         <span>Medical History ー {patientInfo.medicalHistory || "N/A"}</span>
         <span>Voice ー {patientInfo.selectedVoice?.replace('Microsoft','') || "N/A"}</span>
       </div>
