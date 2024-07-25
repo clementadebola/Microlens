@@ -9,7 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { useAuth } from "./context/authContext";
 import Druid from "./Blob";
-import { axiosInstance } from "./utils";
+import { axiosInstance, parseEmail } from "./utils";
 import toast from "react-hot-toast";
 import lisen from "./assets/listen.sound.mp3";
 import {
@@ -240,7 +240,7 @@ const DiagnosisPage: React.FC = () => {
   }
   const userGender = currentUserPayload?.gender.toLowerCase()
     const title = userGender == 'male'?'Mr': userGender == 'female'?'Mrs':''
-    const greetings =  `Good day ${title} ${currentUser?.displayName?.split(' ')[0] || currentUser?.email.split('@')[0]}, how may I help you today?` 
+    const greetings =  `Good day ${title} ${currentUser?.displayName?.split(' ')[0] || parseEmail(currentUser?.email)}, how may I help you today?` 
 
   return (
     <Div100vh>

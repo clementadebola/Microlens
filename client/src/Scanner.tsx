@@ -772,7 +772,7 @@ const Scanner: React.FC = () => {
 
             {!resultLoading ? (
               <>
-                <ResultTitle>{scannedResult?.prediction}</ResultTitle>
+                <ResultTitle>{Array.isArray(scannedResult?.prediction)?scannedResult?.prediction[0]:scannedResult?.prediction}</ResultTitle>
                 <p
                   style={{
                     fontSize: "11px",
@@ -780,7 +780,7 @@ const Scanner: React.FC = () => {
                     fontWeight: "1000",
                   }}
                 >
-                  Confidence: {scannedResult?.confidence}
+                  Confidence: {Array.isArray(scannedResult?.confidence)?scannedResult?.confidence[0]:scannedResult?.confidence}
                 </p>
                 <OrganismDetails
                   res={scannedResult?.metaInfo}

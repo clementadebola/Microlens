@@ -66,6 +66,7 @@ def predict():
         
         
         pred = respond_to_query(None,img, False)
+    
         cleaned_string = pred.strip('```json').strip()
 
         cleaned_string = cleaned_string.strip('```')

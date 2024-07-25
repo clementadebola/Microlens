@@ -34,104 +34,105 @@ export function removeAsterisks(text: string): string {
 export function parseMicroorganismInfo(
   text: any
 ): Partial<MicroorganismInfo> {
-  if (!text) return;
-  const pairs = text?.metaInfo?.split("|");
+  if (!text || !text.metaInfo) return {};
+
+  const metaInfo = text.metaInfo;
+
   const info: Partial<MicroorganismInfo> = {};
 
-  pairs?.forEach((pair) => {
-    const [key, value] = pair?.split(":").map((part) => part.trim());
+  Object.entries(metaInfo).forEach(([key, value]) => {
+    const processedValue = typeof value === 'string' ? value.trim() : value;
 
     switch (key.toLowerCase()) {
       case "name":
-        info.name = value;
+        info.name = processedValue;
         break;
       case "species":
-        info.species = value;
+        info.species = processedValue;
         break;
       case "domain":
-        info.domain = value;
+        info.domain = processedValue;
         break;
       case "disease(s)":
-        info.diseases = value;
+        info.diseases = processedValue;
         break;
       case "transmission":
-        info.transmission = value;
+        info.transmission = processedValue;
         break;
       case "diagnosis":
-        info.diagnosis = value;
+        info.diagnosis = processedValue;
         break;
       case "symptoms":
-        info.symptoms = value;
+        info.symptoms = processedValue;
         break;
       case "treatment":
-        info.treatment = value;
+        info.treatment = processedValue;
         break;
       case "prevention":
-        info.prevention = value;
+        info.prevention = processedValue;
         break;
       case "habitat":
-        info.habitat = value;
+        info.habitat = processedValue;
         break;
       case "morphology":
-        info.morphology = value;
+        info.morphology = processedValue;
         break;
       case "size":
-        info.size = value;
+        info.size = processedValue;
         break;
       case "elevation":
-        info.elevation = value;
+        info.elevation = processedValue;
         break;
       case "shape":
-        info.shape = value;
+        info.shape = processedValue;
         break;
       case "oxygen requirement":
-        info.oxygenRequirement = value;
+        info.oxygenRequirement = processedValue;
         break;
       case "growth temperature":
-        info.growthTemperature = value;
+        info.growthTemperature = processedValue;
         break;
       case "colony characteristics":
-        info.colonyCharacteristics = value;
+        info.colonyCharacteristics = processedValue;
         break;
       case "antibiotic resistance":
-        info.antibioticResistance = value;
+        info.antibioticResistance = processedValue;
         break;
       case "virulence factors":
-        info.virulenceFactors = value;
+        info.virulenceFactors = processedValue;
         break;
       case "genome size":
-        info.genomeSize = value;
+        info.genomeSize = processedValue;
         break;
       case "gc content":
-        info.gcContent = value;
+        info.gcContent = processedValue;
         break;
       case "replication":
-        info.replication = value;
+        info.replication = processedValue;
         break;
       case "motility":
-        info.motility = value;
+        info.motility = processedValue;
         break;
       case "biochemical tests":
-        info.biochemicalTests = value;
+        info.biochemicalTests = processedValue;
         break;
       case "environmental resistance":
-        info.environmentalResistance = value;
+        info.environmentalResistance = processedValue;
         break;
       case "public health impact":
-        info.publicHealthImpact = value;
+        info.publicHealthImpact = processedValue;
         break;
       case "isolation sources":
-        info.isolationSources = value;
+        info.isolationSources = processedValue;
         break;
       case "antibiotics sensitivity":
-        info.antibioticSensitivity = value;
+        info.antibioticSensitivity = processedValue;
         break;
-     
     }
   });
+
   return info;
 }
-
 export const resizeImage = (
   imageDataUrl: string,
   maxWidth: number,
@@ -302,3 +303,12 @@ export const parseError = (err: string) => {
     return "Unknown error";
   }
 };
+
+
+
+
+export function parseEmail(email: string): string {
+  const [localPart, domain] = email.split('@');
+  const cleanedLocalPart = localPart.replace(/\d+/g, '');
+  return cleanedLocalPart
+}
