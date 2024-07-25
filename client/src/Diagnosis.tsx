@@ -298,10 +298,9 @@ const DiagnosisPage: React.FC = () => {
       </InputContainer>
       {diagnosis && (
         <DiagnosisResult>
-          <h3>Diagnosis: {diagnosis.diagnosis}</h3>
-          <h3>Prognosis: {diagnosis.prognosis}</h3>
-          <h3>Recommended Medication:</h3>
-          <ul>
+          <h4>Diagnosis: {diagnosis.diagnosis}</h4>
+          <h4>Recommended Medication:</h4>
+          <ul style={{fontSize:'13px'}}>
             {diagnosis.medication.map((med: string, index: number) => (
               <li key={index}>{med}</li>
             ))}

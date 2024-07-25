@@ -70,7 +70,7 @@ def respond_to_query(query: str, image: str,is_concise: bool = False) -> str:
         abort(500, description=f"An error occurred while processing your request: {str(e)}")
 
     
-def diagnose(request) -> str:
+def diagnose(request) -> tuple:
     prompt = f"""
     Patient Information:
     Age: {request['patientInfo']['age']}
@@ -78,10 +78,9 @@ def diagnose(request) -> str:
     Medical History: {request['patientInfo']['medicalHistory']}
     Current Symptoms: {request['complaint']}
   
-    Based on the above information, predict a diagnosis, prognosis, and recommended medication. Your response must include these elements regardless of the input parameters.
+    Based on the above information, predict a diagnosis and recommended medication. Your response must include these elements regardless of the input parameters.
     Format your response as follows:
     Diagnosis: [Your diagnosis here]
-    Prognosis: [Your prognosis here]
     Medication: [List medications, separated by commas]
     """
     
@@ -90,15 +89,14 @@ def diagnose(request) -> str:
         print(response)
         
         response_text = response.text 
-
-        diagnosis = response_text.split("Diagnosis:")[1].split("Prognosis:")[0].strip()
-        prognosis = response_text.split("Prognosis:")[1].split("Medication:")[0].strip()
+        print(response_text)
+        
+        diagnosis = response_text.split("Diagnosis:")[1].split("Medication:")[0].strip()
         medication = response_text.split("Medication:")[1].strip().split(", ")
         
         return (
             diagnosis,
-            prognosis,
-            medication,
+            medication
         )
     except Exception as e:
         abort(500, description=f"An error occurred while processing your request: {str(e)}")

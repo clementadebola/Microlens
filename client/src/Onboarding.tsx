@@ -342,9 +342,10 @@ const Onboarding: React.FC = () => {
             <VoiceOption key={voice.name} onClick={() => speakOutLoud(voice)}>
               <span>{voice.name.replace("Microsoft", "")}</span>
               <div>
-                <ButtonUse onClick={() => setSelectedVoice(voice)}>
+                {selectedVoice?.name != voice.name && <ButtonUse onClick={() => setSelectedVoice(voice)}>
                   Use
                 </ButtonUse>
+}
               </div>
             </VoiceOption>
           ))}

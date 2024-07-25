@@ -11,9 +11,9 @@ import { axiosInstance, removeAsterisks } from "../utils";
 import { LuSend } from "react-icons/lu";
 
 const Container = styled.div`
+  position: relative;
   max-width: 600px;
   width: 100%;
-  position: relative;
   margin: 0 auto;
   font-family: Arial, sans-serif;
   position: fixed;

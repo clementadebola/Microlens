@@ -27,9 +27,9 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   height: 100vh;
+    max-width: 600px;
   background-color: ${(props) => props.theme.colors.background};
   color: #fff;
-  max-width: 600px;
   margin: 0 auto;
   position: relative;
   overflow: hidden;
@@ -157,14 +157,14 @@ const ProgressCircle = styled.svg`
   transform: rotate(-90deg);
 `;
 
-const ProgressPath = styled.circle<{ duration: number }>`
+const ProgressPath = styled.circle<{ $duration: number }>`
   fill: none;
   stroke: ${(props) => props.theme.colors.primary};
   stroke-width: 6;
   stroke-linecap: round;
   stroke-dasharray: 283;
   stroke-dashoffset: 283;
-  animation: ${progressAnimation} ${(props) => props.duration}ms linear forwards;
+  animation: ${progressAnimation} ${(props) => props.$duration}ms linear forwards;
 `;
 
 const ResultImage = styled.img`
@@ -671,7 +671,7 @@ const Scanner: React.FC = () => {
                     cy="50"
                     r="45"
                     fill="none"
-                    duration={autoScanInterval}
+                    $duration={autoScanInterval}
                   />
                 </ProgressCircle>
               )}

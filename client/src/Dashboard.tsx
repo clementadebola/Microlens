@@ -35,7 +35,7 @@ const DashboardContainer = styled(animated.div)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  height: 100vh;
+  max-height: 100vh;
  overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
   padding: ${(props) => props.theme.spacing.large};
@@ -186,6 +186,7 @@ const Dashboard: React.FC = () => {
           ...prev,
           age: patientInfo?.age,
           gender: patientInfo?.gender,
+          selectedVoice:patientInfo?.selectedVoice,
           medicalHistory: patientInfo?.medicalHistory,
         }));
       }
@@ -313,9 +314,6 @@ const Dashboard: React.FC = () => {
           </Button>
         )}
       </SettingItem>
-    <SettingItem>
-     
-    </SettingItem>
     <div style={{padding:'10px',width:'100%',marginLeft:"10%",marginTop:"30%"}}>
     <Bot/>
     </div>

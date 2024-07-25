@@ -93,18 +93,16 @@ def get_response():
     response = respond_to_query(data['query'], None, True)
     return jsonify({"response": response})
 
-@app.route('/diagnose', methods=['POST'])       
+@app.route('/diagnose', methods=['POST'])
 def get_diagnosis():
     data = request.json
     print(data)
-    diagnosis, prognosis, medication = diagnose(data)
-
+    diagnosis,medication = diagnose(data)
+    
     return jsonify({
-        diagnosis,
-        prognosis,
-        medication
-     })
-
+        'diagnosis': diagnosis,
+        'medication': medication
+    })
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000,use_reloader=True)
