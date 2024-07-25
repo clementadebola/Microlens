@@ -17,7 +17,7 @@ import {
 } from "firebase/firestore";
 
 const baseUrl = window.location.protocol.includes("https")
-  ? "https://microlens.onrender.com"
+  ? "https://microlens-sf5r.onrender.com"
   : "http://127.0.0.1:8000";
 
 export const axiosInstance = axios.create({
