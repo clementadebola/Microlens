@@ -6,13 +6,13 @@ const SignIn = lazy(() => import("./auth/Signin"));
 const SignUp = lazy(() => import("./auth/Signup"));
 const ForgotPassword = lazy(() => import("./auth/Forgotpassword"));
 const Scanner= lazy(() => import("./Scanner"));
+const Onboarding = lazy(() => import("./Onboarding"))
+const Dashboard = lazy(() => import("./Dashboard"))
+const DiagnosisPage = lazy(() => import("./Diagnosis"));
+const Quiz = lazy(() => import("./Quiz"));
 import toast, { useToasterStore } from "react-hot-toast";
-import "./App.css";
 import MainLoader from "./MainLoader";
 import { DefaultTheme, ThemeProvider } from 'styled-components';
-import Onboarding from "./Onboarding";
-import Dashboard from "./Dashboard";
-import DiagnosisPage from "./Diagnosis";
 
 const theme: DefaultTheme = {
   colors: {
@@ -20,7 +20,8 @@ const theme: DefaultTheme = {
     surface: '#1E1E1E',
     primary: '#8690fc',
     secondary: '#025a75',
-    error: '#CF6679',
+    success:'#0f750f',
+    error: '#a80707',
     onBackground: '#FFFFFF',
     onSurface: '#FFFFFF',
     onPrimary: '#000000',
@@ -97,6 +98,7 @@ function App() {
 
       <Routes>
       <Route  path="/" element={<Dashboard />} />
+      <Route  path="/quiz" element={<Quiz />} />
       <Route  path="/diagnose" element={<DiagnosisPage />} />
       <Route  path="/onboarding" element={<Onboarding />} />
         <Route  path="/scan" element={<Scanner />} />

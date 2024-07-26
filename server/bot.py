@@ -93,7 +93,7 @@ def diagnose(request) -> tuple:
         print(response)
         
         response_text = response.text 
-        print(response_text)
+        
         
         diagnosis = response_text.split("Diagnosis:")[1].split("Medication:")[0].strip()
         medication = response_text.split("Medication:")[1].strip().split(", ")
@@ -104,3 +104,25 @@ def diagnose(request) -> tuple:
         )
     except Exception as e:
         abort(500, description=f"An error occurred while processing your request: {str(e)}")
+
+
+def generate_quize(settings):
+    difficulty = settings['difficulty']
+    number_of_questions = settings['numberOfQuestions']
+    field = settings['field']
+
+    prompt = f"""
+    Generate {number_of_questions} {difficulty} multiple-choice questions about {field} in the medical field. Each question should have 4 possible answers, with one correct answer. Format the output as a JSON array of objects, where each object has the following structure:
+     
+        "id": "unique id", 
+        "text": "question text", 
+        "answers": ["answer1", "answer2", "answer3", "answer4"], 
+        "correctAnswer": "correct answer text"
+    """
+    try:
+        response = model.generate_content(prompt)
+        print(response.text)
+        return response.text
+    except Exception as e:
+        abort(500, description=f"An error occurred while processing your request: {str(e)}")
+    

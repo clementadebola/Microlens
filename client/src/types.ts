@@ -43,3 +43,27 @@ export interface IScannedResult {
   metaInfo: string;
   confidence: number;
 }
+
+
+export type QuestionDifficulty = "easy" | "medium" | "hard";
+export type Field =
+  | "physiology"
+  | "anatomy"
+  | "microbiology"
+  | "pathology"
+  | "hematology"
+  | "histopathology"
+  | "chemical pathology";
+
+export interface Question {
+  id: number;
+  text: string;
+  answers: string[];
+  correctAnswer: string;
+}
+
+export interface QuizSettings {
+  difficulty: QuestionDifficulty;
+  numberOfQuestions: number;
+  field: Field;
+}

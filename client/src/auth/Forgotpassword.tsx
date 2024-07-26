@@ -17,6 +17,7 @@ import {
   ErrorMessage,
 } from "../styles";
 import { parseError } from "../utils";
+import Div100vh from 'react-div-100vh'
 
 interface FormData {
   email: string;
@@ -49,6 +50,7 @@ const ForgotPassword: React.FC = () => {
   };
 
   return (
+    <Div100vh>
     <Container>
       <BackButton onClick={() => navigate("/signin")}>
         <FaArrowLeft size={22} color="#ccc" />
@@ -79,6 +81,7 @@ const ForgotPassword: React.FC = () => {
         </Button>
       </Form>
     </Container>
+    </Div100vh>
   );
 };
 

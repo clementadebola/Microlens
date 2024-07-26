@@ -20,7 +20,7 @@ import {
   LogEntry,
   Button,
 } from "./styles";
-import { MdBugReport } from "react-icons/md";
+import { MdBugReport, MdQuestionAnswer } from "react-icons/md";
 import { AiFillEdit, AiOutlineFileDone } from "react-icons/ai";
 import { IoLogIn } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa";
@@ -63,6 +63,7 @@ const DashboardContainer = styled(animated.div)`
   .dash-btns {
     width: 100%;
     display: flex;
+    align-items:center;
     justify-content: center;
   }
 `;
@@ -98,7 +99,7 @@ const CloseButton = styled(IconButton)`
 `;
 
 const DashboardButton = styled(animated(Link))`
-  margin: ${(props) => props.theme.spacing.medium};
+  margin: ${(props) => props.theme.spacing.medium} ${(props) => props.theme.spacing.small};
   padding: ${(props) => props.theme.spacing.small};
   border: none;
   border-radius: 4px;
@@ -111,7 +112,7 @@ const DashboardButton = styled(animated(Link))`
   align-items:center;
   justify-content:center;
   gap:3px;
-  width: 150px;
+  width: fit-content;
 &::active{
     text-decoration:none;
 }
@@ -228,6 +229,9 @@ const Dashboard: React.FC = () => {
         </DashboardButton>
         <DashboardButton to="/scan" style={buttonAnimation}>
           Scan <IoMdQrScanner />
+        </DashboardButton>
+        <DashboardButton to="/quiz" style={buttonAnimation}>
+          Quiz <MdQuestionAnswer />
         </DashboardButton>
       </div>
       <SettingItem>
