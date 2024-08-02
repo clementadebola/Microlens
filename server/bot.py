@@ -84,7 +84,7 @@ def diagnose(request) -> tuple:
   
     Based on the above information, predict a diagnosis and recommended medication. Your response should be detailed and self explanatory even to a layman and must include these elements regardless of the input parameters.
     Format your response as follows:
-    Diagnosis: [Your diagnosis here (In broad and explanatory terms)]
+    Diagnosis: [Your probable diagnosis here (In broad and explanatory terms)]
     Medication: [List medications, separated by commas]
     """
     
