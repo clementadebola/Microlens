@@ -158,15 +158,16 @@ const ProgressCircle = styled.svg`
   transform: rotate(-90deg);
 `;
 
-const ProgressPath = styled.circle<{ duration: number }>`
+const ProgressPath = styled.circle<{ $duration: number }>`
   fill: none;
-  stroke: #0f559b;
+  stroke: ${(props) => props.theme.colors.primary};
   stroke-width: 6;
   stroke-linecap: round;
   stroke-dasharray: 283;
   stroke-dashoffset: 283;
-  animation: ${progressAnimation} ${(props) => props.duration}ms linear forwards;
+  animation: ${progressAnimation} ${(props) => props.$duration}ms linear forwards;
 `;
+
 const ResultImage = styled.img`
   width: 100%;
   height: 300px;
@@ -193,6 +194,21 @@ const CloseButton = styled(IconButton)`
   margin-top: 5px;
   margin-bottom:10px;
   z-index: 1001;
+`;
+const CloseButtonH = styled.button`
+position:absolute;
+z-index:50;
+width: 30px;
+height: 30px;
+display: flex;
+align-items: center;
+justify-content: center;
+background-color: transparent;
+cursor: pointer;
+color: #ffffff;
+font-size: 18px;
+margin-top: 10px;
+margin-bottom: 20px;
 `;
 const TriggerCont = styled.div`
   position: absolute;
@@ -605,63 +621,70 @@ const Scanner: React.FC = () => {
 
     <Div100vh>
 <Container>
-{isScanning && !showSettings && !showHistory ? (
-      <CameraView>
-        <Video ref={videoRef} autoPlay playsInline />
-        <ScannerFocus>
-          <TopLeft />
-          <TopRight />
-          <BottomLeft />
-          <BottomRight />
-        </ScannerFocus>
-        <TriggerCont>
-          <div className="trigger-btn-wrap">
-            <TriggerButton onClick={() => setShowModal(true)}>
-              <FaInfoCircle size={22} />
-            </TriggerButton>
-            <TriggerButton onClick={() => setShowHistory(true)}>
-              <FaSearch size={20} />
-            </TriggerButton>
-            <TriggerButton onClick={toggleFlash}>
-              {isFlashEnabled ? <IoIosFlash size={22} /> : <IoIosFlashOff size={22} />}
-            </TriggerButton>
-          </div>
-        </TriggerCont>
-        <ControlsContainer>
-          <IconButton>
-            <label htmlFor="fileSelect">
-              <MdPermMedia />
-            </label>
-          </IconButton>
-          <input
-            type="file"
-            hidden
-            id="fileSelect"
-            accept="image/*"
-            onChange={handleFileSelect}
-          />
-          <CaptureButtonContainer>
-            <CaptureButton onClick={startFocusing}>
-              <FaCamera />
-            </CaptureButton>
-            {isAnimating && (
-              <ProgressCircle viewBox="0 0 100 100">
-                <ProgressPath
-                  cx="50"
-                  cy="50"
-                  r="45"
-                  fill="none"
-                  duration={autoScanInterval}
-                />
-              </ProgressCircle>
-            )}
-          </CaptureButtonContainer>
-          <IconButton onClick={() => setShowSettings(true)}>
-            <FaCog />
-          </IconButton>
-        </ControlsContainer>
-      </CameraView>
-    ) : null}
+      {isScanning && !showSettings && !showHistory ? (
+        <CameraView>
+          <CloseButtonH onClick={() => navigate("/")}>
+            <FaArrowLeft color="#ccc" size={22} />
+          </CloseButtonH>
+          <Video ref={videoRef} autoPlay playsInline />
+          <ScannerFocus>
+            <TopLeft />
+            <TopRight />
+            <BottomLeft />
+            <BottomRight />
+          </ScannerFocus>
+          <TriggerCont>
+            <div className="trigger-btn-wrap">
+              <TriggerButton onClick={() => setShowModal(true)}>
+                <FaInfoCircle size={22} />
+              </TriggerButton>
+              <TriggerButton onClick={() => setShowHistory(true)}>
+                <FaSearch size={20} />
+              </TriggerButton>
+              <TriggerButton onClick={toggleFlash}>
+                {isFlashEnabled ? (
+                  <IoIosFlash size={22} />
+                ) : (
+                  <IoIosFlashOff size={22} />
+                )}
+              </TriggerButton>
+            </div>
+          </TriggerCont>
+          <ControlsContainer>
+            <IconButton>
+              <label htmlFor="fileSelect">
+                <MdPermMedia />
+              </label>
+            </IconButton>
+            <input
+              type="file"
+              hidden
+              id="fileSelect"
+              accept="image/*"
+              onChange={handleFileSelect}
+            />
+            <CaptureButtonContainer>
+              <CaptureButton onClick={startFocusing}>
+                <FaCamera />
+              </CaptureButton>
+              {isAnimating && (
+                <ProgressCircle viewBox="0 0 100 100">
+                  <ProgressPath
+                    cx="50"
+                    cy="50"
+                    r="45"
+                    fill="none"
+                    $duration={autoScanInterval}
+                  />
+                </ProgressCircle>
+              )}
+            </CaptureButtonContainer>
+            <IconButton onClick={() => setShowSettings(true)}>
+              <FaCog />
+            </IconButton>
+          </ControlsContainer>
+        </CameraView>
+      ) : null}
 
       <AnimatedPage style={settingsAnimation}>
         {showSettings && (
