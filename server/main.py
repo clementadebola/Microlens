@@ -9,7 +9,7 @@ from flask_cors import CORS
 from pathlib import Path
 from skimage import exposure
 import json
-from bot import respond_to_query, diagnose, generate_quize
+from bot import respond_to_query, diagnose, generate_quiz
 import pathlib
 from pathlib import Path
 
@@ -105,13 +105,16 @@ def get_diagnosis():
         'medication': medication
     })
 
-@app.route('/generate-quize', methods=['POST'])
+@app.route('/generate-quiz', methods=['POST'])
 def generate_questions():
     settings = request.json
     
-    questions = generate_quize(settings)
+    questions = generate_quiz(settings)
+    cleaned_string = questions.strip('```json').strip()
+    cleaned_string = cleaned_string.strip('```')
+    data = json.loads(cleaned_string)
 
-    return jsonify(json.loads(questions))
+    return jsonify(data)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000,use_reloader=True)

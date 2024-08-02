@@ -10,7 +10,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { reportBugHelper } from "./utils";
 import { FaUserDoctor } from "react-icons/fa6";
 import toast from "react-hot-toast";
-import Div100vh from 'react-div-100vh'
+import Div100vh from "react-div-100vh";
 import {
   AnimatedPage,
   SettingItem,
@@ -37,7 +37,7 @@ const DashboardContainer = styled(animated.div)`
   align-items: flex-start;
   justify-content: flex-start;
   height: 100%;
- overflow: hidden;
+  overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
   padding: ${(props) => props.theme.spacing.medium};
   .med-history {
@@ -55,15 +55,15 @@ const DashboardContainer = styled(animated.div)`
       top: -10px;
       right: 0;
       cursor: pointer;
-      border-radius:8px;
+      border-radius: 8px;
       background: rgba(5, 57, 71, 0.5);
-      padding:5px 10px;
+      padding: 5px 10px;
     }
   }
   .dash-btns {
     width: 100%;
     display: flex;
-    align-items:center;
+    align-items: center;
     justify-content: center;
   }
 `;
@@ -99,23 +99,30 @@ const CloseButton = styled(IconButton)`
 `;
 
 const DashboardButton = styled(animated(Link))`
-  margin: ${(props) => props.theme.spacing.medium} ${(props) => props.theme.spacing.small};
+  margin: ${(props) => props.theme.spacing.medium}
+    ${(props) => props.theme.spacing.small};
   padding: ${(props) => props.theme.spacing.small};
   border: none;
-  border-radius: 4px;
-  font-size:13px;
+  border-radius: 8px;
+  font-size: 13px;
+  height: 80px;
+  width: 120px;
   background-color: ${(props) => props.theme.colors.primary};
-  color: ${(props) => props.theme.colors.onPrimary};
+  color: ${(props) => props.theme.colors.onSurface};
   text-decoration: none;
   text-align: center;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:3px;
-  width: fit-content;
-&::active{
-    text-decoration:none;
-}
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  &::active {
+    text-decoration: none;
+  }
+  svg {
+    font-size: 24px;
+    fill: ${(props) => props.theme.colors.onSurface};
+  }
 `;
 
 const Dashboard: React.FC = () => {
@@ -126,7 +133,7 @@ const Dashboard: React.FC = () => {
     age: "",
     gender: "",
     medicalHistory: "",
-    selectedVoice:""
+    selectedVoice: "",
   });
 
   const [bugDescription, setBugDescription] = useState("");
@@ -156,7 +163,7 @@ const Dashboard: React.FC = () => {
         "Integrated with firebase to store user details and scans",
         "Integrated Google's Gemini AI for Image analysis and prediction",
         "Added a health diagnostic agent powered by Google's Gemini AI",
-        "Added speech functionality"
+        "Added speech functionality",
       ],
     },
   ];
@@ -176,7 +183,7 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     if (!currentUser?.email) {
-        navigate('/auth')
+      navigate("/auth");
     }
     const getPev = async () => {
       const docRef = doc(db, "patients", currentUser?.uid);
@@ -188,7 +195,7 @@ const Dashboard: React.FC = () => {
           ...prev,
           age: patientInfo?.age,
           gender: patientInfo?.gender,
-          selectedVoice:patientInfo?.selectedVoice,
+          selectedVoice: patientInfo?.selectedVoice,
           medicalHistory: patientInfo?.medicalHistory,
         }));
       }
@@ -202,132 +209,140 @@ const Dashboard: React.FC = () => {
     to: { opacity: 1 },
   });
 
-  const buttonAnimation = useSpring({
-    from: { scale: 1 },
-    to: { scale: 1.05 },
-    config: { tension: 300, friction: 10 },
-  });
-
   useEffect(() => {
     mirage.register();
   }, []);
 
   return (
     <Div100vh>
- <DashboardContainer style={containerAnimation}>
-      <UserAvatar />
-      <div className="med-history">
-        <span className="history-edit" onClick={()=>navigate('/onboarding')}>Edit<AiFillEdit /></span>
-        <span>Age ー {patientInfo.age || "N/A"}</span>
-        <span>Gender ー {patientInfo.gender || "N/A"}</span>
-        <span>Medical History ー {patientInfo.medicalHistory || "N/A"}</span>
-        <span>Voice ー {patientInfo.selectedVoice?.replace('Microsoft','') || "N/A"}</span>
-      </div>
-      <div className="dash-btns">
-        <DashboardButton to="/diagnose" style={buttonAnimation}>
-          Diagnose Me <FaUserDoctor />
-        </DashboardButton>
-        <DashboardButton to="/scan" style={buttonAnimation}>
-          Scan <IoMdQrScanner />
-        </DashboardButton>
-        <DashboardButton to="/quiz" style={buttonAnimation}>
-          Quiz <MdQuestionAnswer />
-        </DashboardButton>
-      </div>
-      <SettingItem>
-        <SettingLabel>Haptic Feedback</SettingLabel>
-        <label className="switch">
-          <input
-            type="checkbox"
-            checked={isHapticFeedbackEnabled}
-            onChange={() =>
-              setIsHapticFeedbackEnabled(!isHapticFeedbackEnabled)
-            }
-          />
-          <span className="slider"></span>
-        </label>
-      </SettingItem>
-
-      <SettingItem>
-        <div className="st-i" onClick={() => setShowUpdateLog(true)}>
-          <AiOutlineFileDone size={25} />
-          Update Logs
-        </div>
-      </SettingItem>
-      <SettingItem>
-        <div className="st-i" onClick={() => setShowReportBug(true)}>
-          <MdBugReport size={25} />
-          Report a Bug
-        </div>
-      </SettingItem>
-      <AnimatedPage style={reportBugAnimation}>
-        <CloseButton onClick={() => setShowReportBug(false)}>
-          <FaArrowLeft />
-        </CloseButton>
-        <h3>Report a Bug</h3>
-        <TextArea
-          placeholder="Describe the bug you encountered..."
-          value={bugDescription}
-          disabled={isBugReportLoading}
-          onChange={(e) => setBugDescription(e.target.value)}
-        />
-        <SubmitButton disabled={isBugReportLoading} onClick={submitBugReport}>
-          {isBugReportLoading ? (
-            <>
-              <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-            </>
-          ) : (
-            "Submit Report"
-          )}
-        </SubmitButton>
-      </AnimatedPage>
-
-      <AnimatedPage style={updateLogAnimation}>
-        <CloseButton onClick={() => setShowUpdateLog(false)}>
-          <FaArrowLeft />
-        </CloseButton>
-        <h3>Update Logs</h3>
-        {updateLogs.map((log, index) => (
-          <LogEntry key={index}>
-            <h4>
-              Version {log.version} - {log.date}
-            </h4>
-            <ul>
-              {log.changes.map((change, changeIndex) => (
-                <li key={changeIndex}>{change}</li>
-              ))}
-            </ul>
-          </LogEntry>
-        ))}
-      </AnimatedPage>
-
-      <SettingItem>
-        {currentUser?.email ? (
-          <Logout />
-        ) : (
-          <Button
-            style={{
-              position: "absolute",
-              bottom: "10px",
-              display: "flex",
-              alignItems: "center",
-              gap: "3px",
-              borderRadius: "10px",
-            }}
-            onClick={() => navigate("/auth")}
+      <DashboardContainer style={containerAnimation}>
+        <UserAvatar />
+        <div className="med-history">
+          <span
+            className="history-edit"
+            onClick={() => navigate("/onboarding")}
           >
-            <IoLogIn size={20} /> Login
-          </Button>
-        )}
-      </SettingItem>
-    <div style={{padding:'10px',width:'100%',marginLeft:"10%",marginTop:"30%"}}>
-    <Bot/>
-    </div>
-    </DashboardContainer>
+            Edit
+            <AiFillEdit />
+          </span>
+          <span>Age ー {patientInfo.age || "N/A"}</span>
+          <span>Gender ー {patientInfo.gender || "N/A"}</span>
+          <span>Medical History ー {patientInfo.medicalHistory || "N/A"}</span>
+          <span>
+            Voice ー{" "}
+            {patientInfo.selectedVoice?.replace("Microsoft", "") || "N/A"}
+          </span>
+        </div>
+        <div className="dash-btns">
+          <DashboardButton to="/diagnose" style={{ background: "#c99e43" }}>
+            <FaUserDoctor />
+            Diagnose Me
+          </DashboardButton>
+          <DashboardButton to="/scan" style={{ background: " #535bf2;" }}>
+            <IoMdQrScanner /> Scan
+          </DashboardButton>
+          <DashboardButton to="/quiz" style={{ background: "#3dc2b7" }}>
+            <MdQuestionAnswer /> Quiz
+          </DashboardButton>
+        </div>
+        <SettingItem>
+          <SettingLabel>Haptic Feedback</SettingLabel>
+          <label className="switch">
+            <input
+              type="checkbox"
+              checked={isHapticFeedbackEnabled}
+              onChange={() =>
+                setIsHapticFeedbackEnabled(!isHapticFeedbackEnabled)
+              }
+            />
+            <span className="slider"></span>
+          </label>
+        </SettingItem>
 
+        <SettingItem>
+          <div className="st-i" onClick={() => setShowUpdateLog(true)}>
+            <AiOutlineFileDone size={25} />
+            Update Logs
+          </div>
+        </SettingItem>
+        <SettingItem>
+          <div className="st-i" onClick={() => setShowReportBug(true)}>
+            <MdBugReport size={25} />
+            Report a Bug
+          </div>
+        </SettingItem>
+        <AnimatedPage style={reportBugAnimation}>
+          <CloseButton onClick={() => setShowReportBug(false)}>
+            <FaArrowLeft />
+          </CloseButton>
+          <h3>Report a Bug</h3>
+          <TextArea
+            placeholder="Describe the bug you encountered..."
+            value={bugDescription}
+            disabled={isBugReportLoading}
+            onChange={(e) => setBugDescription(e.target.value)}
+          />
+          <SubmitButton disabled={isBugReportLoading} onClick={submitBugReport}>
+            {isBugReportLoading ? (
+              <>
+                <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
+              </>
+            ) : (
+              "Submit Report"
+            )}
+          </SubmitButton>
+        </AnimatedPage>
 
+        <AnimatedPage style={updateLogAnimation}>
+          <CloseButton onClick={() => setShowUpdateLog(false)}>
+            <FaArrowLeft />
+          </CloseButton>
+          <h3>Update Logs</h3>
+          {updateLogs.map((log, index) => (
+            <LogEntry key={index}>
+              <h4>
+                Version {log.version} - {log.date}
+              </h4>
+              <ul>
+                {log.changes.map((change, changeIndex) => (
+                  <li key={changeIndex}>{change}</li>
+                ))}
+              </ul>
+            </LogEntry>
+          ))}
+        </AnimatedPage>
+
+        <SettingItem>
+          {currentUser?.email ? (
+            <Logout />
+          ) : (
+            <Button
+              style={{
+                position: "absolute",
+                bottom: "10px",
+                display: "flex",
+                alignItems: "center",
+                gap: "3px",
+                borderRadius: "10px",
+              }}
+              onClick={() => navigate("/auth")}
+            >
+              <IoLogIn size={20} /> Login
+            </Button>
+          )}
+        </SettingItem>
+        <div
+          style={{
+            padding: "10px",
+            width: "100%",
+            marginLeft: "10%",
+            marginTop: "20%",
+          }}
+        >
+          <Bot />
+        </div>
+      </DashboardContainer>
     </Div100vh>
-   
   );
 };
 

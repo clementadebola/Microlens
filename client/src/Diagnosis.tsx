@@ -9,7 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import { useAuth } from "./context/authContext";
 import Druid from "./Blob";
-import { axiosInstance, parseEmail } from "./utils";
+import { axiosInstance, parseEmail, removeAsterisks } from "./utils";
 import toast from "react-hot-toast";
 import lisen from "./assets/listen.sound.mp3";
 import {
@@ -21,7 +21,7 @@ import {
 import { BackButton } from "./styles";
 import { useNavigate } from "react-router-dom";
 import { mirage } from "ldrs";
-import Div100vh from 'react-div-100vh'
+import Div100vh from "react-div-100vh";
 
 const DiagnosisContainer = styled(animated.div)`
   display: flex;
@@ -33,7 +33,8 @@ const DiagnosisContainer = styled(animated.div)`
   justify-content: space-;
   height: 100%;
   padding: ${(props) => props.theme.spacing.large};
-  padding-top:5.5rem;
+  padding-top: 5.5rem;
+  overflow-y:scroll;
 `;
 
 const InputContainer = styled.div`
@@ -52,10 +53,13 @@ const InputToggle = styled.div`
 `;
 
 const ToggleButton = styled.button`
-  background-color: ${(props) => props.active ? props.theme.colors.primary : props.theme.colors.surface};
-  color: ${(props) => props.active ? props.theme.colors.surface : props.theme.colors.text};
+  background-color: ${(props) =>
+    props.active ? props.theme.colors.primary : props.theme.colors.surface};
+  color: ${(props) =>
+    props.active ? props.theme.colors.surface : props.theme.colors.text};
   border: none;
-  padding: ${(props) => props.theme.spacing.small} ${(props) => props.theme.spacing.medium};
+  padding: ${(props) => props.theme.spacing.small}
+    ${(props) => props.theme.spacing.medium};
   margin: 0 ${(props) => props.theme.spacing.small};
   border-radius: 20px;
   cursor: pointer;
@@ -72,7 +76,7 @@ const TextArea = styled.textarea`
   background-color: ${(props) => props.theme.colors.surface};
   padding: ${(props) => props.theme.spacing.medium};
   border-radius: 8px;
-  color:#ccc;
+  color: #ccc;
   border: 1px solid ${(props) => props.theme.colors.border};
   resize: vertical;
   font-family: inherit;
@@ -83,7 +87,8 @@ const SubmitButton = styled.button`
   background-color: ${(props) => props.theme.colors.primary};
   color: ${(props) => props.theme.colors.surface};
   border: none;
-  padding: ${(props) => props.theme.spacing.small} ${(props) => props.theme.spacing.medium};
+  padding: ${(props) => props.theme.spacing.small}
+    ${(props) => props.theme.spacing.medium};
   border-radius: 20px;
   cursor: pointer;
   margin-top: ${(props) => props.theme.spacing.medium};
@@ -105,7 +110,7 @@ const TranscriptBox = styled.div`
   margin-top: ${(props) => props.theme.spacing.medium};
   width: 100%;
   border: 1px solid ${(props) => props.theme.colors.border};
-  color:#ccc;
+  color: #ccc;
   max-height: 150px;
   font-size: 13px;
   overflow-y: auto;
@@ -135,8 +140,8 @@ const DiagnosisPage: React.FC = () => {
   const [textInput, setTextInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const audioRef = useRef(new Audio(lisen));
-  const [transcriptVal, setTranscriptVal] = useState("")
-  const [currentUserPayload, setCurrentUserPayload] = useState(null)
+  const [transcriptVal, setTranscriptVal] = useState("");
+  const [currentUserPayload, setCurrentUserPayload] = useState(null);
   const navigate = useNavigate();
 
   const containerAnimation = useSpring({
@@ -151,7 +156,7 @@ const DiagnosisPage: React.FC = () => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setSelectedVoice(docSnap.data().selectedVoice);
-          setCurrentUserPayload(docSnap.data())
+          setCurrentUserPayload(docSnap.data());
         }
       }
     };
@@ -162,10 +167,9 @@ const DiagnosisPage: React.FC = () => {
     mirage.register();
   }, []);
 
-
-    useEffect(()=>{
-  setTranscriptVal(transcript)
-  },[transcript])
+  useEffect(() => {
+    setTranscriptVal(transcript);
+  }, [transcript]);
 
   const handleDiagnosis = async (complaint: string) => {
     if (currentUser) {
@@ -189,11 +193,12 @@ const DiagnosisPage: React.FC = () => {
       }
     }
     resetTranscript();
-      setTranscriptVal('')
+    setTranscriptVal("");
     setTextInput("");
   };
 
   const speakDiagnosis = (diagnosisData: any) => {
+    SpeechRecognition.stopListening();
     const text = `Your diagnosis is ${
       diagnosisData.diagnosis
     }. Recommended medications are ${diagnosisData.medication.join(", ")}.`;
@@ -214,12 +219,13 @@ const DiagnosisPage: React.FC = () => {
     } else {
       SpeechRecognition.startListening({ continuous: true });
       setDiagnosis(null);
-        setTranscriptVal('')
+      setTranscriptVal("");
       resetTranscript();
     }
   };
 
   const handleSubmit = () => {
+    cancel()
     if (inputMethod === "voice") {
       handleDiagnosis(transcriptVal);
     } else {
@@ -228,9 +234,10 @@ const DiagnosisPage: React.FC = () => {
   };
   useEffect(() => {
     return () => {
+      cancel()
       setDiagnosis(null);
       resetTranscript();
-      setTranscriptVal('')
+      setTranscriptVal("");
       SpeechRecognition.stopListening();
     };
   }, []);
@@ -238,85 +245,95 @@ const DiagnosisPage: React.FC = () => {
   if (!browserSupportsSpeechRecognition) {
     return <span>Your browser doesn't support speech recognition.</span>;
   }
-  const userGender = currentUserPayload?.gender.toLowerCase()
-    const title = userGender == 'male'?'Mr': userGender == 'female'?'Mrs':''
-    const greetings =  `Good day ${title} ${currentUser?.displayName?.split(' ')[0] || parseEmail(currentUser?.email)}, how may I help you today?` 
+  const userGender = currentUserPayload?.gender.toLowerCase();
+  const title =
+    userGender == "male" ? "Mr" : userGender == "female" ? "Mrs" : "";
+  const greetings = `Good day ${title} ${
+    currentUser?.displayName?.split(" ")[0] || parseEmail(currentUser?.email)
+  }, how may I help you today?`;
 
   return (
     <Div100vh>
-
-<DiagnosisContainer style={containerAnimation}>
-      <BackButton onClick={() => navigate("/")}>
-        <FaArrowLeft color="gray" size={22} />
-      </BackButton>
-      <h3 style={{textAlign:'center'}}>{greetings}</h3>
-      <Druid />
-      <InputContainer>
-        <InputToggle>
-          <ToggleButton
-            active={inputMethod === "voice"}
-            onClick={() => setInputMethod("voice")}
-          >
-            <FaMicrophone /> Voice
-          </ToggleButton>
-          <ToggleButton
-            active={inputMethod === "text"}
-            onClick={() => {
-              setInputMethod("text");
-              toggleListening();
-            }}
-          >
-            <FaKeyboard /> Text
-          </ToggleButton>
-        </InputToggle>
-        {inputMethod === "voice" ? (
-          <>
-            {inputMethod === "voice" && (
-              <span className="dots_loader" onClick={toggleListening}>
-                {listening ? "Click to Stop Listening" : "Click and Start Speaking"}
-              </span>
-            )}
-            {listening && (
-              <TranscriptBox contentEditable
-              onBlur={(e) => {
-                setTranscriptVal(e.target.innerText);
-              }}>{transcriptVal}</TranscriptBox>
-            )}
-          </>
-        ) : (
-          <TextArea
-            value={textInput}
-            autoFocus
-            onChange={(e) => setTextInput(e.target.value)}
-            placeholder="Type your symptoms here..."
-          />
+      <DiagnosisContainer style={containerAnimation}>
+        <BackButton onClick={() => navigate("/")}>
+          <FaArrowLeft color="gray" size={22} />
+        </BackButton>
+        <h3 style={{ textAlign: "center" }}>{greetings}</h3>
+        <Druid />
+        <InputContainer>
+          <InputToggle>
+            <ToggleButton
+              active={inputMethod === "voice"}
+              onClick={() => setInputMethod("voice")}
+            >
+              <FaMicrophone /> Voice
+            </ToggleButton>
+            <ToggleButton
+              active={inputMethod === "text"}
+              onClick={() => {
+                setInputMethod("text");
+                toggleListening();
+              }}
+            >
+              <FaKeyboard /> Text
+            </ToggleButton>
+          </InputToggle>
+          {inputMethod === "voice" ? (
+            <>
+              {inputMethod === "voice" && (
+                <span className="dots_loader" onClick={toggleListening}>
+                  {listening
+                    ? "Click to Stop Listening"
+                    : "Click and Start Speaking"}
+                </span>
+              )}
+              {listening && (
+                <TranscriptBox
+                  contentEditable
+                  onBlur={(e) => {
+                    setTranscriptVal(e.target.innerText);
+                  }}
+                >
+                  {transcriptVal}
+                </TranscriptBox>
+              )}
+            </>
+          ) : (
+            <TextArea
+              value={textInput}
+              autoFocus
+              onChange={(e) => setTextInput(e.target.value)}
+              placeholder="Type your symptoms here..."
+            />
+          )}
+          {(transcript || textInput) && (
+            <SubmitButton onClick={handleSubmit}>
+              {isLoading ? (
+                <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
+              ) : (
+                <>
+                  {" "}
+                  <FaPaperPlane style={{ marginRight: "8px" }} />
+                  Get Diagnosis
+                </>
+              )}
+            </SubmitButton>
+          )}
+        </InputContainer>
+        {diagnosis && (
+          <DiagnosisResult>
+            <h4>Diagnosis: </h4>
+            <p style={{ fontSize: "13px" }}>{removeAsterisks(diagnosis.diagnosis)}</p>
+            <h4>Recommended Medication:</h4>
+            <ul style={{ fontSize: "13px" }}>
+              {diagnosis.medication.map((med: string, index: number) => (
+                <li key={index}>{removeAsterisks(med)}</li>
+              ))}
+            </ul>
+          </DiagnosisResult>
         )}
-        {(transcript || textInput) && (
-          <SubmitButton onClick={handleSubmit}>
-           
-            {isLoading ? (
-              <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-            ) : (
-              <> <FaPaperPlane style={{ marginRight: "8px" }} />Get Diagnosis</>
-            )}
-          </SubmitButton>
-        )}
-      </InputContainer>
-      {diagnosis && (
-        <DiagnosisResult>
-          <h4>Diagnosis: {diagnosis.diagnosis}</h4>
-          <h4>Recommended Medication:</h4>
-          <ul style={{fontSize:'13px'}}>
-            {diagnosis.medication.map((med: string, index: number) => (
-              <li key={index}>{med}</li>
-            ))}
-          </ul>
-        </DiagnosisResult>
-      )}
-
-    </DiagnosisContainer>
+      </DiagnosisContainer>
     </Div100vh>
-    
   );
 };
 

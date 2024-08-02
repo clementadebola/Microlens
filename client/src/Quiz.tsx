@@ -8,7 +8,7 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, ThemeProvider } from "styled-components";
 import Confetti from "react-confetti";
 import { BackButton } from "./styles";
 import { FaArrowLeft } from "react-icons/fa";
@@ -22,127 +22,32 @@ import {
 import toast from "react-hot-toast";
 import { mirage } from "ldrs";
 import { useNavigate } from "react-router-dom";
-import correctST from './assets/correct.mp3'
-import failST from './assets/fail.mp3'
+import correctST from "./assets/correct.mp3";
+import failST from "./assets/fail.mp3";
+import Bot from "./bot/main";
 
 const Quiz: React.FC = () => {
-  const [settings, setSettings] = useState<TQuizSettings | null>(null);
-  const [questions, setQuestions] = useState<Question[]>([
-    {
-      id: 1,
-      text: "What is the first-line treatment for an acute asthma attack?",
-      answers: [
-        "Long-acting beta-agonists",
-        "Inhaled corticosteroids",
-        "Short-acting beta-agonists",
-        "Leukotriene receptor antagonists",
-      ],
-      correctAnswer: "Short-acting beta-agonists",
-    },
-    {
-      id: 2,
-      text: "Which lab test is most commonly used to diagnose diabetes mellitus?",
-      answers: [
-        "Complete blood count",
-        "Hemoglobin A1c",
-        "Lipid panel",
-        "Thyroid function test",
-      ],
-      correctAnswer: "Hemoglobin A1c",
-    },
-    {
-      id: 3,
-      text: "What is the primary treatment for an uncomplicated urinary tract infection (UTI) in adults?",
-      answers: [
-        "Azithromycin",
-        "Amoxicillin",
-        "Trimethoprim-sulfamethoxazole",
-        "Doxycycline",
-      ],
-      correctAnswer: "Trimethoprim-sulfamethoxazole",
-    },
-    {
-      id: 4,
-      text: "Which of the following is a common side effect of ACE inhibitors?",
-      answers: ["Hypoglycemia", "Hyperkalemia", "Constipation", "Weight gain"],
-      correctAnswer: "Hyperkalemia",
-    },
-    {
-      id: 5,
-      text: "What is the recommended first-line medication for hypertension in patients with diabetes?",
-      answers: [
-        "Calcium channel blockers",
-        "ACE inhibitors",
-        "Beta-blockers",
-        "Diuretics",
-      ],
-      correctAnswer: "ACE inhibitors",
-    },
-    {
-      id: 6,
-      text: "Which vaccine is recommended for all adults over the age of 65?",
-      answers: [
-        "Influenza vaccine",
-        "Pneumococcal vaccine",
-        "Hepatitis B vaccine",
-        "Shingles vaccine",
-      ],
-      correctAnswer: "Pneumococcal vaccine",
-    },
-    {
-      id: 7,
-      text: "What is the standard treatment for a patient with a confirmed deep vein thrombosis (DVT)?",
-      answers: [
-        "Oral antibiotics",
-        "Warfarin",
-        "Ibuprofen",
-        "Inhaled corticosteroids",
-      ],
-      correctAnswer: "Warfarin",
-    },
-    {
-      id: 8,
-      text: "Which imaging modality is most appropriate for diagnosing a suspected pulmonary embolism?",
-      answers: ["Ultrasound", "Chest X-ray", "CT pulmonary angiography", "MRI"],
-      correctAnswer: "CT pulmonary angiography",
-    },
-    {
-      id: 9,
-      text: "What is the first-line treatment for major depressive disorder?",
-      answers: [
-        "Cognitive behavioral therapy",
-        "Selective serotonin reuptake inhibitors (SSRIs)",
-        "Antipsychotics",
-        "Benzodiazepines",
-      ],
-      correctAnswer: "Selective serotonin reuptake inhibitors (SSRIs)",
-    },
-    {
-      id: 10,
-      text: "In patients with chronic obstructive pulmonary disease (COPD), which medication is used to manage symptoms on a daily basis?",
-      answers: [
-        "Short-acting beta-agonists",
-        "Long-acting beta-agonists",
-        "Inhaled corticosteroids",
-        "Systemic corticosteroids",
-      ],
-      correctAnswer: "Long-acting beta-agonists",
-    },
-  ]);
+  const [settings, setSettings] = useState<TQuizSettings | null>({
+    difficulty: "medium",
+    numberOfQuestions: 10,
+    field: "physiology",
+  });
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
-  const [timeLeft, setTimeLeft] = useState(7);
+  const [timeLeft, setTimeLeft] = useState(15);
   const [quizFinished, setQuizFinished] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty>("medium");
+  const [numberOfQuestions, setNumberOfQuestions] = useState(10);
+  const [field, setField] = useState<Field>("physiology");
+  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
+
   const correctSound = new Audio(correctST);
   const incorrectSound = new Audio(failST);
-
-  useEffect(() => {
-    if (settings) {
-      fetchQuestions();
-    }
-  }, [settings]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (questions.length > 0 && currentQuestionIndex < questions.length) {
@@ -151,7 +56,7 @@ const Quiz: React.FC = () => {
           if (prev <= 0) {
             clearInterval(timer);
             handleNextQuestion();
-            return 5;
+            return 15;
           }
           return prev - 1;
         });
@@ -161,13 +66,17 @@ const Quiz: React.FC = () => {
     }
   }, [currentQuestionIndex, questions]);
 
+  useEffect(() => {
+    mirage.register();
+  }, []);
+
   const fetchQuestions = async () => {
     try {
       setIsLoading(true);
-      const { data } = await axiosInstance.post("/generate-quize", settings);
-      console.log(data);
-      setIsLoading(false);
+      const { data } = await axiosInstance.post("/generate-quiz", settings);
+
       setQuestions(data);
+      setIsLoading(false);
     } catch (error: any) {
       setIsLoading(false);
       toast.error("Error fetching questions:", error.message);
@@ -188,12 +97,15 @@ const Quiz: React.FC = () => {
       incorrectSound.play();
     }
 
+    setSelectedAnswer(answer);
     setTimeout(() => handleNextQuestion(), 1000);
   };
+
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-      setTimeLeft(7);
+      setTimeLeft(15);
+      setSelectedAnswer(null);
     } else {
       handleQuizFinish();
     }
@@ -213,19 +125,159 @@ const Quiz: React.FC = () => {
   const handleBack = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex((prev) => prev - 1);
-      setTimeLeft(7);
+      setTimeLeft(15);
     } else {
       setSettings(null);
+      setQuestions([]);
     }
   };
 
+  const handleSettingsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isLoading) {
+      setSettings({ difficulty, numberOfQuestions, field });
+      await fetchQuestions();
+    }
+  };
+
+  const fadeIn = useSpring({
+    from: { opacity: 0 },
+    to: { opacity: 1 },
+    config: config.molasses,
+  });
+
+  const expandProps = useSpring({
+    maxHeight: expanded ? "500px" : "0px",
+    opacity: expanded ? 1 : 0,
+    config: { duration: 300 },
+  });
+
+  const correctAnswersCount = userAnswers.filter(
+    (answer, index) => answer === questions[index]?.correctAnswer
+  ).length;
+
+  const questionsToShow = expanded ? questions : questions.slice(0, 2);
+
   return (
     <QuizContainer>
+      <BackButton onClick={() => navigate("/")}>
+        <FaArrowLeft fill="#ccc" />
+      </BackButton>
       {showConfetti && <Confetti />}
-      {!settings ? (
-        <QuizSettings isLoading={isLoading} onSettingsSubmit={setSettings} />
+      {!settings || questions.length === 0 ? (
+        <SettingsForm onSubmit={handleSettingsSubmit}>
+          <h3 style={{ alignSelf: "center" }}>Quiz Settings</h3>
+          <SettingsGrid>
+            <SettingsItem>
+              <label>Difficulty:</label>
+              <select
+                value={difficulty}
+                onChange={(e) =>
+                  setDifficulty(e.target.value as QuestionDifficulty)
+                }
+              >
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+            </SettingsItem>
+            <SettingsItem>
+              <label>Number of Questions:</label>
+              <input
+                type="number"
+                min="1"
+                max="50"
+                value={numberOfQuestions}
+                onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
+              />
+            </SettingsItem>
+            <SettingsItem>
+              <label>Field:</label>
+              <select
+                value={field}
+                onChange={(e) => setField(e.target.value as Field)}
+              >
+                <option value="physiology">Physiology</option>
+                <option value="anatomy">Anatomy</option>
+                <option value="microbiology">Microbiology</option>
+                <option value="pathology">Pathology</option>
+                <option value="hematology">Hematology</option>
+                <option value="histopathology">Histopathology</option>
+                <option value="chemical pathology">Chemical Pathology</option>
+              </select>
+            </SettingsItem>
+          </SettingsGrid>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <l-mirage size="28" speed="2.5" color="white"></l-mirage>
+            ) : (
+              "Start Quiz"
+            )}
+          </Button>
+        </SettingsForm>
       ) : quizFinished ? (
-        <QuizResults questions={questions} userAnswers={userAnswers} />
+        <ResultsContainer>
+          {correctAnswersCount > questions.length / 2 && <Confetti />}
+          <CongratsMessage>
+            {correctAnswersCount >= questions.length / 2 ? (
+              <>
+                🎉 Congratulations!
+                <FiThumbsUp />
+              </>
+            ) : (
+              <>
+                😔 Try again next time! <FiThumbsDown />
+              </>
+            )}
+          </CongratsMessage>
+          <p>
+            You answered {correctAnswersCount} out of {questions.length}{" "}
+            questions correctly!
+          </p>
+          <ResultsList>
+            {questionsToShow.map((question, index) => (
+              <ResultItem
+                key={index}
+                isCorrect={userAnswers[index] === question.correctAnswer}
+              >
+                <QuestionText>{question.text}</QuestionText>
+                <AnswerText>Your answer: {userAnswers[index]}</AnswerText>
+                <CorrectAnswerText>
+                  Correct answer: {question.correctAnswer}
+                </CorrectAnswerText>
+              </ResultItem>
+            ))}
+          </ResultsList>
+          {!expanded && questions.length > 2 && (
+            <ExpandButton onClick={() => setExpanded(!expanded)}>
+              {expanded ? <FiChevronUp /> : <FiChevronDown />}{" "}
+              {expanded ? "Hide" : "Read More"}
+            </ExpandButton>
+          )}
+          {expanded && (
+            <animated.div style={expandProps}>
+              <ResultsList>
+                {questions.slice(2).map((question, index) => (
+                  <ResultItem
+                    key={index + 2}
+                    isCorrect={
+                      userAnswers[index + 2] === question.correctAnswer
+                    }
+                  >
+                    <QuestionText>{question.text}</QuestionText>
+                    <AnswerText>
+                      Your answer: {userAnswers[index + 2]}
+                    </AnswerText>
+                    <CorrectAnswerText>
+                      Correct answer: {question.correctAnswer}
+                    </CorrectAnswerText>
+                  </ResultItem>
+                ))}
+              </ResultsList>
+            </animated.div>
+          )}
+          <Button onClick={() => window.location.reload()}>Retry Quiz</Button>
+        </ResultsContainer>
       ) : (
         <>
           <BackButton onClick={handleBack}>
@@ -234,15 +286,61 @@ const Quiz: React.FC = () => {
           <DifficultyLabel difficulty={settings.difficulty}>
             {settings.difficulty.toUpperCase()}
           </DifficultyLabel>
-          <QuestionCard
-            question={questions[currentQuestionIndex]}
-            onAnswerSelect={handleAnswerSelect}
-            timeLeft={timeLeft}
-            totalQuestions={questions.length}
-            currentQuestionIndex={currentQuestionIndex}
-          />
+          <animated.div style={fadeIn}>
+            {questions[currentQuestionIndex]?.text && (
+              <Card>
+                <QuestionHeader>
+                  <h3>
+                    Question {currentQuestionIndex + 1}/{questions.length}
+                  </h3>
+
+                  <div className="floader">
+                    <div className="face">
+                      <div className="fcircle"></div>
+                    </div>
+                    <Timer>
+                      <FiClock />
+                      <span>{timeLeft}s</span>
+                    </Timer>
+                  </div>
+                </QuestionHeader>
+                <QuestionText>
+                  {questions[currentQuestionIndex]?.text}
+                </QuestionText>
+                <AnswerList>
+                  {questions[currentQuestionIndex]?.answers.map(
+                    (answer, index) => (
+                      <AnswerButton
+                        key={index}
+                        onClick={() => handleAnswerSelect(answer)}
+                        isAnswer={selectedAnswer === answer}
+                        isCorrect={
+                          selectedAnswer === answer &&
+                          answer ===
+                            questions[currentQuestionIndex].correctAnswer
+                        }
+                        disabled={selectedAnswer !== null}
+                      >
+                        {answer || "N/A"}
+                      </AnswerButton>
+                    )
+                  )}
+                </AnswerList>
+              </Card>
+            )}
+          </animated.div>
         </>
       )}
+       <div
+          style={{
+            padding: "10px",
+            width: "100%",
+            marginLeft: "15%",
+            marginTop: "35%",
+          }}
+        >
+          <Bot />
+        </div>
     </QuizContainer>
   );
 };
@@ -251,239 +349,94 @@ const QuizContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: ${(props) => props.theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.medium};
   max-width: 600px;
   margin: 0 auto;
-  color: ${(props) => props.theme.colors.onBackground};
-  background-color: ${(props) => props.theme.colors.background};
+  color: ${({ theme }) => theme.colors.onBackground};
+  background-color: ${({ theme }) => theme.colors.background};
   min-height: 100vh;
 `;
 
 const DifficultyLabel = styled.div<{ difficulty: QuestionDifficulty }>`
-  padding: ${(props) =>
-    `${props.theme.spacing.small} ${props.theme.spacing.medium}`};
-  border-radius: 5px;
+  padding: ${({ theme }) => `${theme.spacing.small} ${theme.spacing.medium}`};
+  border-radius: ${({ theme }) => theme.borderRadius};
   font-weight: bold;
-  font-size: ${(props) => props.theme.fontSizes.small};
-  margin-bottom: ${(props) => props.theme.spacing.large};
-  background-color: ${(props) =>
-    props.difficulty === "easy"
-      ? props.theme.colors.secondary
-      : props.difficulty === "medium"
-      ? props.theme.colors.primary
-      : props.theme.colors.error};
-  color: ${(props) => props.theme.colors.onSecondary};
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  background-color: ${({ theme, difficulty }) =>
+    difficulty === "easy"
+      ? theme.colors.secondary
+      : difficulty === "medium"
+      ? theme.colors.primary
+      : theme.colors.error};
+  color: ${({ theme, difficulty }) =>
+    difficulty === "easy" ? theme.colors.onSecondary : theme.colors.onPrimary};
 `;
-
-const QuizSettings: React.FC<{
-  isLoading: boolean;
-  onSettingsSubmit: (settings: TQuizSettings) => void;
-}> = ({ isLoading, onSettingsSubmit }) => {
-  const [difficulty, setDifficulty] = useState<QuestionDifficulty>("medium");
-  const [numberOfQuestions, setNumberOfQuestions] = useState(10);
-  const [field, setField] = useState<Field>("physiology");
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    !isLoading && onSettingsSubmit({ difficulty, numberOfQuestions, field });
-  };
-  useEffect(() => {
-    mirage.register();
-  }, []);
-const navigate = useNavigate()
-  return (
-    <SettingsForm onSubmit={handleSubmit}>
-      <BackButton onClick={() => navigate('/')}>
-        <FaArrowLeft fill="#ccc" />
-      </BackButton>
-      <h3
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: "5px",
-        }}
-      >
-        <FiSettings /> Quiz Settings
-      </h3>
-      <SettingsGrid>
-        <SettingsItem>
-          <label>Difficulty:</label>
-          <select
-            value={difficulty}
-            onChange={(e) =>
-              setDifficulty(e.target.value as QuestionDifficulty)
-            }
-          >
-            <option value="easy">Easy</option>
-            <option value="medium">Medium</option>
-            <option value="hard">Hard</option>
-          </select>
-        </SettingsItem>
-        <SettingsItem>
-          <label>Number of Questions:</label>
-          <input
-            type="number"
-            min="1"
-            max="50"
-            value={numberOfQuestions}
-            onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
-          />
-        </SettingsItem>
-        <SettingsItem>
-          <label>Field:</label>
-          <select
-            value={field}
-            onChange={(e) => setField(e.target.value as Field)}
-          >
-            <option value="physiology">Physiology</option>
-            <option value="anatomy">Anatomy</option>
-            <option value="microbiology">Microbiology</option>
-            <option value="pathology">Pathology</option>
-            <option value="hematology">Hematology</option>
-            <option value="histopathology">Histopathology</option>
-            <option value="chemical pathology">Chemical Pathology</option>
-          </select>
-        </SettingsItem>
-      </SettingsGrid>
-      <Button type="submit">
-        {" "}
-        {isLoading ? (
-          <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-        ) : (
-          "Start Quiz"
-        )}
-      </Button>
-    </SettingsForm>
-  );
-};
 
 const SettingsForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: ${(props) => props.theme.spacing.large};
+  gap: ${({ theme }) => theme.spacing.large};
   width: 100%;
-  background-color: ${(props) => props.theme.colors.surface};
-  padding: ${(props) => props.theme.spacing.large};
-  border-radius: 10px;
 `;
 
 const SettingsGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: ${(props) => props.theme.spacing.medium};
+  gap: ${({ theme }) => theme.spacing.medium};
 `;
 
 const SettingsItem = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${(props) => props.theme.spacing.small};
+  gap: ${({ theme }) => theme.spacing.small};
 
   label {
+    font-size: ${({ theme }) => theme.fontSizes.small};
     font-weight: bold;
-    color: ${(props) => props.theme.colors.onSurface};
+    color: ${({ theme }) => theme.colors.onSurface};
   }
 
   select,
   input {
-    padding: ${(props) => props.theme.spacing.small};
-    background-color: ${(props) => props.theme.colors.background};
-    color: ${(props) => props.theme.colors.onBackground};
-    border: 1px solid ${(props) => props.theme.colors.primary};
-    border-radius: 10px;
+    padding: 10px 20px;
+    background-color: ${({ theme }) => theme.colors.background};
+    color: ${({ theme }) => theme.colors.onBackground};
+    border: 1px solid ${({ theme }) => theme.colors.primary};
+    border-radius: 16px;
+    font-size: ${({ theme }) => theme.fontSizes.small};
   }
 `;
 
-const QuestionCard: React.FC<{
-  question: Question;
-  onAnswerSelect: (answer: string) => void;
-  timeLeft: number;
-  totalQuestions: number;
-  currentQuestionIndex: number;
-}> = ({
-  question,
-  onAnswerSelect,
-  timeLeft,
-  totalQuestions,
-  currentQuestionIndex,
-}) => {
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
-
-  const fadeIn = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1 },
-    config: config.molasses,
-  });
-
-  const handleAnswer = (answer: string) => {
-    setSelectedAnswer(answer);
-    onAnswerSelect(answer);
-  };
-
-  return (
-    <animated.div style={fadeIn}>
-      {question?.text && (
-        <Card>
-          <QuestionHeader>
-            <h4>
-              Question {currentQuestionIndex + 1}/{totalQuestions}
-            </h4>
-            <Timer>
-              <FiClock />
-              <span>{timeLeft}s</span>
-            </Timer>
-          </QuestionHeader>
-          <QuestionText>{question?.text}</QuestionText>
-          <AnswerList>
-            {question?.answers.map((answer, index) => (
-              <AnswerButton
-                key={index}
-                onClick={() => handleAnswer(answer)}
-                isAnswer={selectedAnswer === answer}
-                isCorrect={
-                  selectedAnswer === answer && answer === question.correctAnswer
-                }
-              >
-                {answer || "N/A"}
-              </AnswerButton>
-            ))}
-          </AnswerList>
-        </Card>
-      )}
-    </animated.div>
-  );
-};
-
 const Card = styled.div`
-  background-color: ${(props) => props.theme.colors.surface};
-  color: ${(props) => props.theme.colors.onSurface};
-  padding: ${(props) => props.theme.spacing.large};
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 100%;
+  color: ${({ theme }) => theme.colors.onSurface};
+  padding: ${({ theme }) => theme.spacing.large};
+  border-radius: ${({ theme }) => theme.borderRadius};
+  min-width: 100%;
 `;
 
 const QuestionHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${(props) => props.theme.spacing.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
 
   h3 {
-    font-size: ${(props) => props.theme.fontSizes.large};
-    color: ${(props) => props.theme.colors.onSurface};
+    font-size: ${({ theme }) => theme.fontSizes.large};
+    color: ${({ theme }) => theme.colors.onSurface};
   }
 `;
 
 const Timer = styled.div`
   display: flex;
   align-items: center;
-  font-size: ${(props) => props.theme.fontSizes.medium};
-  color: ${(props) => props.theme.colors.primary};
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  color: ${({ theme }) => theme.colors.primary};
   animation: beat 1s infinite;
+  color:#fff;
 
   svg {
-    margin-right: ${(props) => props.theme.spacing.small};
+    margin-right: ${({ theme }) => theme.spacing.small};
   }
   @keyframes beat {
     0% {
@@ -499,200 +452,172 @@ const Timer = styled.div`
 `;
 
 const QuestionText = styled.p`
-  font-size: ${(props) => props.theme.fontSizes.small};
-  margin-bottom: ${(props) => props.theme.spacing.large};
-  min-width:100%;
+  font-size: ${({ theme }) => theme.fontSizes.medium};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  line-height: 1.5;
 `;
 
 const AnswerList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${(props) => props.theme.spacing.small};
+  gap: ${({ theme }) => theme.spacing.medium};
 `;
 
 const shake = keyframes`
   0% { transform: translateX(0); }
-  25% { transform: translateX(10px); }
-  50% { transform: translateX(-10px); }
-  75% { transform: translateX(10px); }
+  25% { transform: translateX(5px); }
+  50% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
   100% { transform: translateX(0); }
 `;
 
 const AnswerButton = styled.button<{ isAnswer: boolean; isCorrect: boolean }>`
-  background: ${(props) =>
-    props.isAnswer
-      ? props.isCorrect
-        ? props.theme.colors.success
-        : props.theme.colors.error
-      : props.theme.colors.primary};
-  color: ${(props) =>
-    props.isCorrect
-      ? props.theme.colors.onSurface
-      : props.theme.colors.onPrimary};
-  padding: ${(props) => props.theme.spacing.small};
+  background: ${({ theme, isAnswer, isCorrect }) =>
+    isAnswer
+      ? isCorrect
+        ? theme.colors.success
+        : theme.colors.error
+      : theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onSurface};
+  padding: ${({ theme }) => theme.spacing.medium};
   border: none;
-  border-radius: 8px;
+  border-radius: 18px;
   cursor: pointer;
-  font-size: ${(props) => props.theme.fontSizes.small};
-  transition: background-color 0.1s ease;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
 
-  animation: ${(props) => props.isAnswer && !props.isCorrect && shake} 0.5s;
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+
+  animation: ${({ isAnswer, isCorrect }) => isAnswer && !isCorrect && shake}
+    0.5s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transition: width 0.3s ease, height 0.3s ease;
+  }
+
+  &:active::before {
+    width: 200px;
+    height: 200px;
+    margin-left: -100px;
+    margin-top: -100px;
+    opacity: 0;
+  }
 `;
-
-const QuizResults: React.FC<{
-  questions: Question[];
-  userAnswers: (string | null)[];
-}> = ({ questions, userAnswers }) => {
-  const correctAnswersCount = userAnswers.filter(
-    (answer, index) => answer === questions[index].correctAnswer
-  ).length;
-
-  const [expanded, setExpanded] = useState(false);
-
-  const expandProps = useSpring({
-    maxHeight: expanded ? "500px" : "0px",
-    opacity: expanded ? 1 : 0,
-    config: { duration: 300 },
-  });
-
-  const questionsToShow = expanded ? questions : questions.slice(0, 2);
-
-  return (
-    <ResultsContainer>
-      {correctAnswersCount > questions.length / 2 && <Confetti />}
-      <CongratsMessage>
-        {correctAnswersCount >= questions.length / 2 ? (
-          <>
-            🎉 Congratulations!
-            <FiThumbsUp />
-          </>
-        ) : (
-          <>
-            😔 Try again next time! <FiThumbsDown />
-          </>
-        )}
-      </CongratsMessage>
-      <p>
-        You answered {correctAnswersCount} out of {questions.length} questions
-        correctly!
-      </p>
-      <ResultsList>
-        {questionsToShow.map((question, index) => (
-          <ResultItem
-            key={index}
-            isCorrect={userAnswers[index] === question.correctAnswer}
-          >
-            <QuestionText>{question.text}</QuestionText>
-            <AnswerText>Your answer: {userAnswers[index]}</AnswerText>
-            <CorrectAnswerText>
-              Correct answer: {question.correctAnswer}
-            </CorrectAnswerText>
-          </ResultItem>
-        ))}
-      </ResultsList>
-      {!expanded && questions.length > 2 && (
-        <ExpandButton onClick={() => setExpanded(!expanded)}>
-          {expanded ? <FiChevronUp /> : <FiChevronDown />}{" "}
-          {expanded ? "Hide" : "Read More"}
-        </ExpandButton>
-      )}
-      {expanded && (
-        <animated.div style={expandProps}>
-          <ResultsList>
-            {questions.slice(2).map((question, index) => (
-              <ResultItem
-                key={index + 2}
-                isCorrect={userAnswers[index + 2] === question.correctAnswer}
-              >
-                <QuestionText>{question.text}</QuestionText>
-                <AnswerText>Your answer: {userAnswers[index + 2]}</AnswerText>
-                <CorrectAnswerText>
-                  Correct answer: {question.correctAnswer}
-                </CorrectAnswerText>
-              </ResultItem>
-            ))}
-          </ResultsList>
-        </animated.div>
-      )}
-      <Button onClick={() => window.location.reload()}>Retry Quiz</Button>
-    </ResultsContainer>
-  );
-};
 
 const ResultsContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: ${(props) => props.theme.colors.surface};
-  color: ${(props) => props.theme.colors.onSurface};
-  padding: ${(props) => props.theme.spacing.small}
-    ${(props) => props.theme.spacing.medium};
-  border-radius: 10px;
+  color: ${({ theme }) => theme.colors.onSurface};
   width: 100%;
-  position: relative;
-  overflow: hidden;
-
-  p {
-    font-size: 13px;
-  }
+  height: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-y: scroll;
 `;
 
 const CongratsMessage = styled.h2`
   display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: ${(props) => props.theme.fontSizes.large};
-  margin-bottom: ${(props) => props.theme.spacing.medium};
+  gap: ${({ theme }) => theme.spacing.small};
+  font-size: ${({ theme }) => theme.fontSizes.large};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  text-align: center;
 `;
 
 const ResultsList = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${(props) => props.theme.spacing.large};
+  gap: ${({ theme }) => theme.spacing.medium};
   width: 100%;
+  margin-top:5px;
 `;
 
 const ResultItem = styled.div<{ isCorrect: boolean }>`
-  background-color: ${(props) =>
-    props.isCorrect ? props.theme.colors.success : props.theme.colors.error};
-  color: ${(props) => props.theme.colors.onSurface};
-  padding: ${(props) => props.theme.spacing.medium};
-  margin: 5px 0;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: ${({ theme, isCorrect }) =>
+    isCorrect ? theme.colors.success : theme.colors.error}22;
+  color: ${({ theme }) => theme.colors.onSurface};
+  padding: ${({ theme }) => theme.spacing.medium};
+  border-radius: ${({ theme }) => theme.borderRadius};
+  border-left: 5px solid
+    ${({ theme, isCorrect }) =>
+      isCorrect ? theme.colors.success : theme.colors.error};
 `;
 
 const AnswerText = styled.p`
-  margin-top: ${(props) => props.theme.spacing.small};
+  margin-top: ${({ theme }) => theme.spacing.small};
+  font-weight: bold;
+  font-size: ${({ theme }) => theme.fontSizes.small};
 `;
 
 const CorrectAnswerText = styled.p`
-  margin-top: ${(props) => props.theme.spacing.small};
+  margin-top: ${({ theme }) => theme.spacing.small};
   font-weight: bold;
+  font-size: ${({ theme }) => theme.fontSizes.small};
+  color: ${({ theme }) => theme.colors.success};
 `;
 
 const Button = styled.button`
-  background-color: ${(props) => props.theme.colors.primary};
-  color: ${(props) => props.theme.colors.onPrimary};
-  padding: ${(props) => props.theme.spacing.small} ${(props) => props.theme.spacing.medium};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.onPrimary};
+  padding: 10px 20px;
   border: none;
-  border-radius: 18px;
+  border-radius: 16px;
   cursor: pointer;
-  font-size: ${(props) => props.theme.fontSizes.small};
-  margin-top: ${(props) => props.theme.spacing.large};
+  font-size: ${({ theme }) => theme.fontSizes.medium};
+  font-weight: bold;
+  margin-top: ${({ theme }) => theme.spacing.large};
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 150px;
 
   &:hover {
-    background-color: ${(props) => props.theme.colors.secondary};
-    color: ${(props) => props.theme.colors.onSurface};
+    background-color: ${({ theme }) => theme.colors.primaryVariant};
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
   }
 `;
 
 const ExpandButton = styled.button`
   background: none;
   border: none;
-  font-size: ${(props) => props.theme.fontSizes.small};
+  font-size: ${({ theme }) => theme.fontSizes.small};
   cursor: pointer;
-  color: ${(props) => props.theme.colors.primary};
-  margin-top: ${(props) => props.theme.spacing.medium};
+  color: ${({ theme }) => theme.colors.primary};
+  margin-top: ${({ theme }) => theme.spacing.medium};
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.small};
+
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 export default Quiz;

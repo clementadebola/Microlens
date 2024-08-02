@@ -106,7 +106,7 @@ def diagnose(request) -> tuple:
         abort(500, description=f"An error occurred while processing your request: {str(e)}")
 
 
-def generate_quize(settings):
+def generate_quiz(settings):
     difficulty = settings['difficulty']
     number_of_questions = settings['numberOfQuestions']
     field = settings['field']
@@ -121,7 +121,6 @@ def generate_quize(settings):
     """
     try:
         response = model.generate_content(prompt)
-        print(response.text)
         return response.text
     except Exception as e:
         abort(500, description=f"An error occurred while processing your request: {str(e)}")

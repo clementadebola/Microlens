@@ -103,6 +103,10 @@ const TypingEffect: React.FC<TypingEffectProps> = ({ text, isUser }) => {
     navigator.clipboard.writeText(text);
     toast.success("Copied to clipboard!");
   };
+
+  useEffect(() => {
+    return () => cancel();
+  }, []);
   const speakOut = (text: string) => {
     speak({
       text,
