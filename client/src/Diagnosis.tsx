@@ -18,6 +18,7 @@ import {
   FaPaperPlane,
   FaArrowLeft,
 } from "react-icons/fa";
+import { HiSpeakerWave, HiSpeakerXMark } from "react-icons/hi2";
 import { BackButton } from "./styles";
 import { useNavigate } from "react-router-dom";
 import { mirage } from "ldrs";
@@ -34,7 +35,7 @@ const DiagnosisContainer = styled(animated.div)`
   height: 100%;
   padding: ${(props) => props.theme.spacing.large};
   padding-top: 5.5rem;
-  overflow-y:scroll;
+  overflow-y: scroll;
 `;
 
 const InputContainer = styled.div`
@@ -117,6 +118,7 @@ const TranscriptBox = styled.div`
 `;
 
 const DiagnosisResult = styled(animated.div)`
+  position: relative;
   background-color: ${(props) => props.theme.colors.surface};
   padding: ${(props) => props.theme.spacing.large};
   border-radius: 8px;
@@ -127,6 +129,7 @@ const DiagnosisResult = styled(animated.div)`
 
 const DiagnosisPage: React.FC = () => {
   const { currentUser } = useAuth();
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [diagnosis, setDiagnosis] = useState<any>(null);
   const {
     transcript,
@@ -199,9 +202,12 @@ const DiagnosisPage: React.FC = () => {
 
   const speakDiagnosis = (diagnosisData: any) => {
     SpeechRecognition.stopListening();
+  
     const text = `Your diagnosis is ${
       diagnosisData.diagnosis
     }. Recommended medications are ${diagnosisData.medication.join(", ")}.`;
+    
+    setIsSpeaking(true);
     speak({
       text,
       voice: selectedVoice
@@ -209,6 +215,7 @@ const DiagnosisPage: React.FC = () => {
             .getVoices()
             .find((voice) => voice.name === selectedVoice)
         : undefined,
+      onEnd: () => setIsSpeaking(false),
     });
   };
 
@@ -225,7 +232,7 @@ const DiagnosisPage: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    cancel()
+    cancel();
     if (inputMethod === "voice") {
       handleDiagnosis(transcriptVal);
     } else {
@@ -234,7 +241,7 @@ const DiagnosisPage: React.FC = () => {
   };
   useEffect(() => {
     return () => {
-      cancel()
+      cancel();
       setDiagnosis(null);
       resetTranscript();
       setTranscriptVal("");
@@ -252,10 +259,16 @@ const DiagnosisPage: React.FC = () => {
     currentUser?.displayName?.split(" ")[0] || parseEmail(currentUser?.email)
   }, how may I help you today?`;
 
+
   return (
     <Div100vh>
       <DiagnosisContainer style={containerAnimation}>
-        <BackButton onClick={() => navigate("/")}>
+        <BackButton
+          onClick={() => {
+            cancel();
+            navigate("/");
+          }}
+        >
           <FaArrowLeft color="gray" size={22} />
         </BackButton>
         <h3 style={{ textAlign: "center" }}>{greetings}</h3>
@@ -322,8 +335,23 @@ const DiagnosisPage: React.FC = () => {
         </InputContainer>
         {diagnosis && (
           <DiagnosisResult>
+            <span
+              style={{
+                position: "absolute",
+                top: "10px",
+                right: "10px",
+                cursor: "pointer",
+              }}
+              onClick={() =>
+                isSpeaking ? cancel() : speakDiagnosis(diagnosis)
+              }
+            >
+              {isSpeaking ? <HiSpeakerXMark /> : <HiSpeakerWave />}
+            </span>
             <h4>Diagnosis: </h4>
-            <p style={{ fontSize: "13px" }}>{removeAsterisks(diagnosis.diagnosis)}</p>
+            <p style={{ fontSize: "13px" }}>
+              {removeAsterisks(diagnosis.diagnosis)}
+            </p>
             <h4>Recommended Medication:</h4>
             <ul style={{ fontSize: "13px" }}>
               {diagnosis.medication.map((med: string, index: number) => (

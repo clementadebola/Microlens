@@ -37,9 +37,9 @@ const DashboardContainer = styled(animated.div)`
   align-items: flex-start;
   justify-content: flex-start;
   height: 100%;
-  overflow: hidden;
+  overflow:hidden;
   background-color: ${(props) => props.theme.colors.background};
-  padding: ${(props) => props.theme.spacing.medium};
+  padding:0  ${(props) => props.theme.spacing.medium} 0 ${(props) => props.theme.spacing.medium};
   .med-history {
     width: 100%;
     position: relative;
@@ -49,6 +49,7 @@ const DashboardContainer = styled(animated.div)`
     flex-direction: column;
     gap: 10px;
     font-size: 13px;
+    border-radius:6px;
 
     .history-edit {
       position: absolute;

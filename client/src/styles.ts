@@ -38,7 +38,7 @@ export const Button = styled.button`
   color: #fff;
   border: none;
   border-radius: 20px;
-  padding: 10px 20px;
+  padding: 8px 16px;
   font-size: 13px;
   cursor: pointer;
   transition: background-color 0.3s;
@@ -149,13 +149,14 @@ export const PasswordToggle = styled.span`
 `;
 
 export const SettingItem = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   width: 100%;
 
   .st-i {
     display: flex;
     align-items: center;
     gap: 10px;
+    font-size:13px;
     cursor: pointer;
   }
   .st-i:hover {

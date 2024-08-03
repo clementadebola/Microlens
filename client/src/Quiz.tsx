@@ -70,7 +70,7 @@ const Quiz: React.FC = () => {
     mirage.register();
   }, []);
 
-  const fetchQuestions = async () => {
+  const fetchQuestions = async (settings:TQuizSettings) => {
     try {
       setIsLoading(true);
       const { data } = await axiosInstance.post("/generate-quiz", settings);
@@ -122,21 +122,13 @@ const Quiz: React.FC = () => {
     }
   };
 
-  const handleBack = () => {
-    if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex((prev) => prev - 1);
-      setTimeLeft(15);
-    } else {
-      setSettings(null);
-      setQuestions([]);
-    }
-  };
+ 
 
   const handleSettingsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoading) {
       setSettings({ difficulty, numberOfQuestions, field });
-      await fetchQuestions();
+      await fetchQuestions({ difficulty, numberOfQuestions, field });
     }
   };
 
@@ -209,7 +201,7 @@ const Quiz: React.FC = () => {
           </SettingsGrid>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
-              <l-mirage size="28" speed="2.5" color="white"></l-mirage>
+              <l-mirage size="60" speed="2.5" color="white"></l-mirage>
             ) : (
               "Start Quiz"
             )}
@@ -219,7 +211,7 @@ const Quiz: React.FC = () => {
         <ResultsContainer>
           {correctAnswersCount > questions.length / 2 && <Confetti />}
           <CongratsMessage>
-            {correctAnswersCount >= questions.length / 2 ? (
+            {correctAnswersCount >= ((Math.floor(questions.length-1)) / 2) ? (
               <>
                 🎉 Congratulations!
                 <FiThumbsUp />
@@ -280,7 +272,7 @@ const Quiz: React.FC = () => {
         </ResultsContainer>
       ) : (
         <>
-          <BackButton onClick={handleBack}>
+          <BackButton onClick={()=>window.location.reload()}>
             <FaArrowLeft fill="#ccc" />
           </BackButton>
           <DifficultyLabel difficulty={settings.difficulty}>
@@ -336,7 +328,7 @@ const Quiz: React.FC = () => {
             padding: "10px",
             width: "100%",
             marginLeft: "15%",
-            marginTop: "35%",
+            marginTop: "36%",
           }}
         >
           <Bot />
