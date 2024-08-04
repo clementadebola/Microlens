@@ -12,6 +12,7 @@ import Druid from "./Blob";
 import { axiosInstance, parseEmail, removeAsterisks } from "./utils";
 import toast from "react-hot-toast";
 import lisen from "./assets/listen.sound.mp3";
+import drugListIcon from './assets/Property_medicine_prescription_and_pills.png'
 import {
   FaMicrophone,
   FaKeyboard,
@@ -352,7 +353,7 @@ const DiagnosisPage: React.FC = () => {
             <p style={{ fontSize: "13px" }}>
               {removeAsterisks(diagnosis.diagnosis)}
             </p>
-            <h4>Recommended Medication:</h4>
+            <h4 style={{display:'flex',alignItems:'center', gap:'2px'}}> <img width={45} src={drugListIcon}/> Recommended Medication</h4>
             <ul style={{ fontSize: "13px" }}>
               {diagnosis.medication.map((med: string, index: number) => (
                 <li key={index}>{removeAsterisks(med)}</li>

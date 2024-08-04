@@ -25,9 +25,11 @@ import { AiFillEdit, AiOutlineFileDone } from "react-icons/ai";
 import { IoLogIn } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa";
 import { mirage } from "ldrs";
-import { IoMdQrScanner } from "react-icons/io";
 import Bot from "./bot/main";
-
+import scanIcon from './assets/lensIcon.webp'
+import dnaIcon from './assets/Property1057_DNA.png'
+import quizIcon from './assets/Property050_Medical_Chat.png'
+import diagnoseIcon from './assets/Property052_Medical_App.png'
 const DashboardContainer = styled(animated.div)`
   position: relative;
   display: flex;
@@ -116,12 +118,10 @@ const DashboardButton = styled(animated(Link))`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
   &::active {
     text-decoration: none;
   }
   svg {
-    font-size: 24px;
     fill: ${(props) => props.theme.colors.onSurface};
   }
 `;
@@ -235,15 +235,15 @@ const Dashboard: React.FC = () => {
           </span>
         </div>
         <div className="dash-btns">
-          <DashboardButton to="/diagnose" style={{ background: "#c99e43" }}>
-            <FaUserDoctor />
+          <DashboardButton to="/diagnose" style={{ background: "#045A69" }}>
+            <img src={diagnoseIcon} width={45}/>
             Diagnose Me
           </DashboardButton>
-          <DashboardButton to="/scan" style={{ background: " #535bf2;" }}>
-            <IoMdQrScanner /> Scan
+          <DashboardButton to="/scan" style={{ background: "#363566" }}>
+          <img src={scanIcon} width={45}/> Scan
           </DashboardButton>
-          <DashboardButton to="/quiz" style={{ background: "#3dc2b7" }}>
-            <MdQuestionAnswer /> Quiz
+          <DashboardButton to="/quiz" style={{ background: "#0F7536" }}>
+          <img src={quizIcon} width={45}/> Quiz
           </DashboardButton>
         </div>
         <SettingItem>
