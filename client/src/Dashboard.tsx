@@ -107,7 +107,7 @@ const DashboardButton = styled(animated(Link))`
   padding: ${(props) => props.theme.spacing.small};
   border: none;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 12px;
   height: 80px;
   width: 120px;
   background-color: ${(props) => props.theme.colors.primary};
