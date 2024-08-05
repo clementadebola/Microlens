@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { Link } from "react-router-dom";
 import { animated } from "react-spring";
 
@@ -12,7 +12,7 @@ export const Container = styled.div`
   max-width: 600px;
   height: 100%;
   margin: 0 auto;
-  overflow-y:hidden;
+  overflow-y: hidden;
 `;
 
 export const AnimatedPage = animated(styled.div`
@@ -22,7 +22,7 @@ export const AnimatedPage = animated(styled.div`
   right: 0;
   bottom: 0;
   background-color: ${(props) => props.theme.colors.background};
-  padding:${(props) => props.theme.spacing.small} ;
+  padding: ${(props) => props.theme.spacing.small};
   color: #ffffff;
   overflow-y: auto;
 `);
@@ -49,7 +49,17 @@ export const Button = styled.button`
     background-color: #0c1f31;
   }
 `;
-
+export const gradientAnimation = keyframes`
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+`;
 export const BackButton = styled.div`
   position: absolute;
   border-radius: 10px;
@@ -82,7 +92,6 @@ export const Form = styled.form`
   display: flex;
   flex-direction: column;
   justify-content: center;
-
 `;
 
 export const ErrorMessage = styled.p`
@@ -156,7 +165,7 @@ export const SettingItem = styled.div`
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size:13px;
+    font-size: 13px;
     cursor: pointer;
   }
   .st-i:hover {
@@ -169,6 +178,7 @@ export const SettingItem = styled.div`
 
 export const SettingLabel = styled.label`
   display: block;
+  font-size: 13px;
   margin-bottom: 5px;
 `;
 

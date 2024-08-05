@@ -24,6 +24,7 @@ import { BackButton } from "./styles";
 import { useNavigate } from "react-router-dom";
 import { mirage } from "ldrs";
 import Div100vh from "react-div-100vh";
+import useLanguage from "./context/langContext";
 
 const DiagnosisContainer = styled(animated.div)`
   display: flex;
@@ -147,6 +148,7 @@ const DiagnosisPage: React.FC = () => {
   const [transcriptVal, setTranscriptVal] = useState("");
   const [currentUserPayload, setCurrentUserPayload] = useState(null);
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
 
   const containerAnimation = useSpring({
     from: { opacity: 0 },
@@ -184,6 +186,7 @@ const DiagnosisPage: React.FC = () => {
         const patientInfo = docSnap.data();
         try {
           const { data } = await axiosInstance.post("/diagnose", {
+            language,
             patientInfo,
             complaint,
           });
@@ -204,9 +207,9 @@ const DiagnosisPage: React.FC = () => {
   const speakDiagnosis = (diagnosisData: any) => {
     SpeechRecognition.stopListening();
   
-    const text = `Your diagnosis is ${
+    const text = `${t('Your diagnosis is')} ${
       diagnosisData.diagnosis
-    }. Recommended medications are ${diagnosisData.medication.join(", ")}.`;
+    }. ${t('Recommended medications are')} ${diagnosisData.medication.join(", ")}.`;
     
     setIsSpeaking(true);
     speak({
@@ -256,9 +259,9 @@ const DiagnosisPage: React.FC = () => {
   const userGender = currentUserPayload?.gender.toLowerCase();
   const title =
     userGender == "male" ? "Mr" : userGender == "female" ? "Mrs" : "";
-  const greetings = `Good day ${title} ${
+  const greetings = `${t('Good day')} ${title} ${
     currentUser?.displayName?.split(" ")[0] || parseEmail(currentUser?.email)
-  }, how may I help you today?`;
+  }, ${t('how may I help')}`;
 
 
   return (
@@ -267,7 +270,7 @@ const DiagnosisPage: React.FC = () => {
         <BackButton
           onClick={() => {
             cancel();
-            navigate("/");
+            navigate("/dashboard");
           }}
         >
           <FaArrowLeft color="gray" size={22} />
@@ -280,7 +283,7 @@ const DiagnosisPage: React.FC = () => {
               active={inputMethod === "voice"}
               onClick={() => setInputMethod("voice")}
             >
-              <FaMicrophone /> Voice
+              <FaMicrophone /> {t('Voice')}
             </ToggleButton>
             <ToggleButton
               active={inputMethod === "text"}
@@ -289,7 +292,7 @@ const DiagnosisPage: React.FC = () => {
                 toggleListening();
               }}
             >
-              <FaKeyboard /> Text
+              <FaKeyboard /> {t('Text')}
             </ToggleButton>
           </InputToggle>
           {inputMethod === "voice" ? (
@@ -297,8 +300,8 @@ const DiagnosisPage: React.FC = () => {
               {inputMethod === "voice" && (
                 <span className="dots_loader" onClick={toggleListening}>
                   {listening
-                    ? "Click to Stop Listening"
-                    : "Click and Start Speaking"}
+                    ? t("Click to Stop Listening")
+                    : t("Click and Start Speaking")}
                 </span>
               )}
               {listening && (
@@ -317,7 +320,7 @@ const DiagnosisPage: React.FC = () => {
               value={textInput}
               autoFocus
               onChange={(e) => setTextInput(e.target.value)}
-              placeholder="Type your symptoms here..."
+              placeholder={t("Type your symptoms here...")}
             />
           )}
           {(transcript || textInput) && (
@@ -328,7 +331,7 @@ const DiagnosisPage: React.FC = () => {
                 <>
                   {" "}
                   <FaPaperPlane style={{ marginRight: "8px" }} />
-                  Get Diagnosis
+                  {t('Get Diagnosis')}
                 </>
               )}
             </SubmitButton>
@@ -353,7 +356,7 @@ const DiagnosisPage: React.FC = () => {
             <p style={{ fontSize: "13px" }}>
               {removeAsterisks(diagnosis.diagnosis)}
             </p>
-            <h4 style={{display:'flex',alignItems:'center', gap:'2px'}}> <img width={45} src={drugListIcon}/> Recommended Medication</h4>
+            <h4 style={{display:'flex',alignItems:'center', gap:'2px'}}> <img width={45} src={drugListIcon}/> {t('Recommended Medication')}</h4>
             <ul style={{ fontSize: "13px" }}>
               {diagnosis.medication.map((med: string, index: number) => (
                 <li key={index}>{removeAsterisks(med)}</li>

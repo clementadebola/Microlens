@@ -46,7 +46,7 @@ const SignUp: React.FC = () => {
   
   useEffect(() => {
     if (currentUser?.email) {
-      navigate("/");
+      navigate("/dashboard");
     }
   });
   const [showPassword, setShowPassword] = useState(false);

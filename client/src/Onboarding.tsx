@@ -1,16 +1,16 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import styled from "styled-components";
 import { useSpring, animated } from "@react-spring/web";
 import { useAuth } from "./context/authContext";
 import { useNavigate } from "react-router-dom";
 import { useSpeechSynthesis } from "react-speech-kit";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft, FaPlay, FaCheck } from "react-icons/fa";
 import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import toast from "react-hot-toast";
 import { mirage } from "ldrs";
 import { BackButton } from "./styles";
-import Div100vh from 'react-div-100vh'
+import Div100vh from "react-div-100vh";
 
 const OnboardingContainer = styled(animated.div)`
   display: flex;
@@ -109,7 +109,7 @@ const VoiceOption = styled.div`
   margin: ${(props) => props.theme.spacing.medium} 0;
   padding: ${(props) => props.theme.spacing.medium};
   border: 1px solid ${(props) => props.theme.colors.border};
-  border-radius: 10px;
+  border-radius: 18px;
   background-color: ${(props) => props.theme.colors.surface};
   color: ${(props) => props.theme.colors.onSurface};
   cursor: pointer;
@@ -118,13 +118,48 @@ const VoiceOption = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
 `;
 
-const IconButton = styled.button`
+const VoiceAvatar = styled.div`
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-size: cover;
+  background-position: center;
+  margin-right: ${(props) => props.theme.spacing.medium};
+`;
+
+const VoiceInfo = styled.div`
+  flex-grow: 1;
+`;
+
+const VoiceName = styled.h4`
+  margin: 0;
+  font-size: ${(props) => props.theme.fontSizes.medium};
+`;
+
+const VoiceAccent = styled.p`
+  margin: 0;
+  font-size: ${(props) => props.theme.fontSizes.small};
+  color: ${(props) => props.theme.colors.textSecondary};
+`;
+
+const VoiceControls = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const IconButton = styled.button`
+  width: 30px;
+  height: 30px;
+  border-radius: 16px;
+  background-color: ${(props) => props.theme.colors.primary};
   border: none;
   outline: none;
   cursor: pointer;
@@ -132,33 +167,26 @@ const IconButton = styled.button`
   justify-content: center;
   align-items: center;
   color: #fff;
-  font-size: 20px;
-`;
+  font-size: 10px;
+  margin-left: ${(props) => props.theme.spacing.small};
+  transition: all 0.2s ease;
 
-const CloseButton = styled(IconButton)`
-  width: 30px;
-  height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: transparent;
-  cursor: pointer;
-  color: #ffffff;
-  font-size: 18px;
-  margin-bottom: 20px;
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
 
 const VoiceButton = styled(Button)`
   width: 60%;
   margin-top: ${(props) => props.theme.spacing.large};
 `;
-const ButtonUse = styled(Button)`
-  padding: 10px;
-  border-radius: 6px;
-`;
+
 interface Voice {
   name: string;
   lang: string;
+  gender: 'male' | 'female';
+  accent: string;
+  avatar: string;
 }
 
 const Onboarding: React.FC = () => {
@@ -175,6 +203,8 @@ const Onboarding: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
+  const { speak, voices: speechKitVoices, supported } = useSpeechSynthesis();
+
   useEffect(() => {
     if (!currentUser?.email) {
       navigate("/auth");
@@ -184,9 +214,7 @@ const Onboarding: React.FC = () => {
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         setIsUpdate(true);
-
         const patientInfo = docSnap.data();
-
         setPatientInfo((prev) => ({
           ...prev,
           age: patientInfo?.age,
@@ -197,16 +225,22 @@ const Onboarding: React.FC = () => {
     };
 
     getPev();
-
     mirage.register();
   }, []);
-  const { speak, voices: speechKitVoices, supported } = useSpeechSynthesis();
 
   useEffect(() => {
     if (supported && speechKitVoices.length > 0) {
       const filteredVoices = speechKitVoices
         .filter((voice) => voice.lang.startsWith("en"))
-        .map((voice) => ({ name: voice.name, lang: voice.lang }));
+        .map((voice) => ({
+          name: voice.name,
+          lang: voice.lang,
+          gender: voice.name.includes('Female') ? 'female' : 'male',
+          accent: voice.name.includes('US') ? 'American' : 'British',
+          avatar: voice.name.includes('Female') 
+            ? `https://randomuser.me/api/portraits/women/${Math.floor(Math.random() * 70)}.jpg`
+            : `https://randomuser.me/api/portraits/men/${Math.floor(Math.random() * 70)}.jpg`
+        }));
       setAvailableVoices(filteredVoices);
     }
   }, [supported, speechKitVoices]);
@@ -245,7 +279,7 @@ const Onboarding: React.FC = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<
+    e: ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >
   ) => {
@@ -255,7 +289,7 @@ const Onboarding: React.FC = () => {
   const speakOutLoud = (voice: Voice) => {
     const speechKitVoice = speechKitVoices.find((v) => v.name === voice.name);
     if (speechKitVoice) {
-      speak({ text: "This is a sample of my voice.", voice: speechKitVoice });
+      speak({ text: "Hi there! I'm your friendly AI assistant.", voice: speechKitVoice });
     }
   };
 
@@ -266,108 +300,138 @@ const Onboarding: React.FC = () => {
         await updateDoc(doc(db, "patients", currentUser.uid), {
           selectedVoice: voice.name,
         });
-        navigate("/");
+        navigate("/dashboard");
         setIsLoading(false);
       }
     } catch (err: any) {
       setIsLoading(false);
+      toast.error(err.message);
     }
   };
 
   return (
     <Div100vh>
-<OnboardingContainer style={containerAnimation}>
-      {isUpdate && (
-        <BackButton onClick={() => navigate("/")}>
-          <FaArrowLeft color="gray" size={22} />
-        </BackButton>
-      )}
-
-      {!showVoiceModal ? (
-        <Form onSubmit={handleSubmit}>
-          <FormTitle>Please tell us about you</FormTitle>
-          <InputGroup>
-            <Label htmlFor="age">Age</Label>
-            <Input
-              type="number"
-              id="age"
-              name="age"
-              placeholder="Enter your age"
-              value={patientInfo.age}
-              onChange={handleChange}
-              autoFocus
-              required
-            />
-          </InputGroup>
-          <InputGroup>
-            <Label htmlFor="gender">Gender</Label>
-            <Select
-              id="gender"
-              name="gender"
-              value={patientInfo.gender}
-              onChange={handleChange}
-              required
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-              <option value="prefer-not-to-say">Prefer not to say</option>
-            </Select>
-          </InputGroup>
-          <InputGroup>
-            <Label htmlFor="medicalHistory">Medical History</Label>
-            <TextArea
-              id="medicalHistory"
-              name="medicalHistory"
-              placeholder="Example: Diagnosed with type 2 diabetes in 2015, family history of heart disease, allergic to penicillin etc."
-              value={patientInfo.medicalHistory}
-              onChange={handleChange}
-              required
-            />
-          </InputGroup>
-          <Button type="submit" style={buttonAnimation}>
-            {isLoading ? (
-              <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-            ) : (
-              "Next"
-            )}
-          </Button>
-        </Form>
-      ) : (
-        <AnimatedPage style={voiceSelectionAnimation}>
-          <BackButton onClick={() => setShowVoiceModal(false)}>
-            <FaArrowLeft fill="#ccc" />
+      <OnboardingContainer style={containerAnimation}>
+        {isUpdate && (
+          <BackButton onClick={() => navigate("/dashboard")}>
+            <FaArrowLeft color="gray" size={22} />
           </BackButton>
-          <FormTitle>Select a Voice</FormTitle>
-          {availableVoices.map((voice) => (
-            <VoiceOption key={voice.name} onClick={() => speakOutLoud(voice)}>
-              <span>{voice.name.replace("Microsoft", "")}</span>
-              <div>
-                {selectedVoice?.name != voice.name && <ButtonUse onClick={() => setSelectedVoice(voice)}>
-                  Use
-                </ButtonUse>
-}
-              </div>
-            </VoiceOption>
-          ))}
-          {selectedVoice && (
-            <VoiceButton
-              onClick={() => handleVoiceSelection(selectedVoice)}
-              style={buttonAnimation}
-            >
+        )}
+
+        {!showVoiceModal ? (
+          <Form onSubmit={handleSubmit}>
+            <FormTitle>
+              Please tell us about your{" "}
+              <span
+                style={{
+                  background: "linear-gradient(to right, #32DD49, #7E57C2)",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                awesome self
+              </span>
+            </FormTitle>
+
+            <InputGroup>
+              <Label htmlFor="age">Age</Label>
+              <Input
+                type="number"
+                id="age"
+                name="age"
+                placeholder="Enter your age"
+                value={patientInfo.age}
+                onChange={handleChange}
+                autoFocus
+                required
+              />
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="gender">Gender</Label>
+              <Select
+                id="gender"
+                name="gender"
+                value={patientInfo.gender}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+              </Select>
+            </InputGroup>
+            <InputGroup>
+              <Label htmlFor="medicalHistory">Medical History</Label>
+              <TextArea
+                id="medicalHistory"
+                name="medicalHistory"
+                placeholder="Example: Diagnosed with type 2 diabetes in 2015, family history of heart disease, allergic to penicillin etc."
+                value={patientInfo.medicalHistory}
+                onChange={handleChange}
+                required
+              />
+            </InputGroup>
+            <Button type="submit" style={buttonAnimation}>
               {isLoading ? (
                 <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
               ) : (
-                "Confirm Selection"
+                "Next"
               )}
-            </VoiceButton>
-          )}
-        </AnimatedPage>
-      )}
+            </Button>
+          </Form>
+        ) : (
+          <AnimatedPage style={voiceSelectionAnimation}>
+            <BackButton onClick={() => setShowVoiceModal(false)}>
+              <FaArrowLeft fill="#ccc" />
+            </BackButton>
+            <FormTitle>
+              Select a{" "}
+              <span
+                style={{
+                  background: "linear-gradient(to right, #FF6347, #7E57C2)",
+                  WebkitBackgroundClip: "text",
+                  color: "transparent",
+                }}
+              >
+                cool voice
+              </span>
+            </FormTitle>
+
+            {availableVoices.map((voice) => (
+              <VoiceOption key={voice.name}>
+                <VoiceAvatar style={{ backgroundImage: `url(${voice.avatar})` }} />
+                <VoiceInfo>
+                  <VoiceName>{voice.name.replace("Microsoft", "")}</VoiceName>
+                  <VoiceAccent>{voice.accent} accent</VoiceAccent>
+                </VoiceInfo>
+                <VoiceControls>
+                  <IconButton onClick={() => speakOutLoud(voice)}>
+                    <FaPlay />
+                  </IconButton>
+                  <IconButton onClick={() => setSelectedVoice(voice)}>
+                    {selectedVoice?.name === voice.name ? <FaCheck /> : 'Use'}
+                  </IconButton>
+                </VoiceControls>
+              </VoiceOption>
+            ))}
+            {selectedVoice && (
+              <VoiceButton
+                onClick={() => handleVoiceSelection(selectedVoice)}
+                style={buttonAnimation}
+              >
+                {isLoading ? (
+                  <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
+                ) : (
+                  "Confirm Selection"
+                )}
+              </VoiceButton>
+            )}
+          </AnimatedPage>
+        )}
     </OnboardingContainer>
     </Div100vh>
-    
   );
 };
 

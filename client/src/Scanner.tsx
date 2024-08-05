@@ -23,6 +23,7 @@ import { IScannedResult } from "./types";
 import { useAuth } from "./context/authContext";
 import localforage from "localforage";
 import Div100vh from 'react-div-100vh'
+import useLanguage from "./context/langContext";
 
 const Container = styled.div`
   display: flex;
@@ -343,11 +344,14 @@ const Scanner: React.FC = () => {
   const [resultLoading, setResultLoading] = useState<boolean>(false);
   const [isFlashEnabled, setIsFlashEnabled] = useState(false);
   const [resultSaveLoading, setResultSaveLoading] = useState(false);
+  const { t } = useLanguage();
 
-  const STORAGE_KEY = "scanHistory";
+  
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
+  const STORAGE_KEY = "scanHistory";
+
 
   useEffect(() => {
     if (!currentUser?.email) {
@@ -572,7 +576,7 @@ const Scanner: React.FC = () => {
 
         setScanHistory(updatedHistory);
         setResultSaveLoading(false);
-        toast.success("Saved successfully!");
+        toast.success(t("Saved successfully"));
       }
     } catch (err: any) {
       setResultSaveLoading(false);
@@ -587,7 +591,7 @@ const Scanner: React.FC = () => {
       const updatedHistory = existingHistory.filter((item) => item.id !== id);
       await localforage.setItem(STORAGE_KEY, updatedHistory);
       setScanHistory(updatedHistory);
-      toast.success("Scan deleted successfully");
+      toast.success(t("Deleted successfully"));
       setShowResult(false);
     } catch (err: any) {
       toast.error("Failed to delete scan");
@@ -623,7 +627,7 @@ const Scanner: React.FC = () => {
 <Container>
       {isScanning && !showSettings && !showHistory ? (
         <CameraView>
-          <CloseButtonH onClick={() => navigate("/")}>
+          <CloseButtonH onClick={() => navigate("/dashboard")}>
             <FaArrowLeft color="#ccc" size={22} />
           </CloseButtonH>
           <Video ref={videoRef} autoPlay playsInline />
@@ -692,9 +696,9 @@ const Scanner: React.FC = () => {
             <CloseButton onClick={() => setShowSettings(false)}>
               <FaTimes />
             </CloseButton>
-            <h2>Settings</h2>
+            <h2>{t('Settings')}</h2>
             <SettingItem>
-              <SettingLabel>Auto-scan interval (ms)</SettingLabel>
+              <SettingLabel>{t('Auto-scan interval (ms)')}</SettingLabel>
               <SettingInput
                 type="number"
                 value={autoScanInterval}
@@ -713,10 +717,10 @@ const Scanner: React.FC = () => {
             <CloseButton onClick={() => setShowHistory(false)}>
               <FaArrowLeft />
             </CloseButton>
-            <h2>Scan History</h2>
+            <h2>{t('Scan History')}</h2>
             <SearchBar
               type="search"
-              placeholder="Search history..."
+              placeholder={t("Search history...")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -750,7 +754,7 @@ const Scanner: React.FC = () => {
                 </HistoryItem>
               ))
             ) : (
-              <p>No history found!</p>
+              <p>{t('No history found')}!</p>
             )}
           </>
         )}
@@ -805,9 +809,9 @@ const Scanner: React.FC = () => {
                   {resultSaveLoading ? (
                     <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
                   ) : !capturedImage && scannedResult?.image ? (
-                    "Unsave"
+                    t("Unsave")
                   ) : (
-                    "Save"
+                    t("Save")
                   )}
                 </button>
               </>
@@ -838,7 +842,7 @@ const Scanner: React.FC = () => {
             <CloseButton onClick={() => setShowModal(false)}>
               <FaTimes />
             </CloseButton>
-            <h3>How to Scan 🔍</h3>
+            <h3>{t('How to Scan')} 🔍</h3>
             <ul
               style={{
                 listStyle: "roman",
@@ -846,16 +850,15 @@ const Scanner: React.FC = () => {
                 fontSize: "14px",
               }}
             >
-              <h3>#Option 1</h3>
-              <li>Point the camera at an object you want to scan.</li>
-              <li>Tap the camera button to capture and analyze the image.</li>
-              <li>View the scan results and save them if desired.</li>
-              <li>Access your scan history using the search button.</li>
-              <li>Adjust settings using the gear icon.</li>
-              <h3>#Option 2</h3>
+              <h3>#{t('Option 1')}</h3>
+              <li>{t('Point the camera at an object you want to scan')}.</li>
+              <li>{t('Tap the camera button to capture and analyze the image')}.</li>
+              <li>{t('View the scan results and save them if desired')}.</li>
+              <li>{t('Access your scan history using the search button')}.</li>
+              <li>{t('Adjust settings using the gear icon')}.</li>
+              <h3>#{t('Option 2')}</h3>
               <p>
-                Click on the image icon; left to the camera button to select
-                an image from your gallery to scan.
+                {t('Click on the image icon; left to the camera button to select an image from your gallery to scan')}.
               </p>
             </ul>
           </ModalContent>

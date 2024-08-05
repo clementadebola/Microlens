@@ -2,13 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { useSpring, animated } from "@react-spring/web";
-import { db } from "./firebase";
+import { auth, db } from "./firebase";
 import { useAuth } from "./context/authContext";
 import UserAvatar from "./Avatar";
-import Logout from "./auth/Logout";
 import { doc, getDoc } from "firebase/firestore";
-import { reportBugHelper } from "./utils";
-import { FaUserDoctor } from "react-icons/fa6";
+import { parseError, reportBugHelper } from "./utils";
 import toast from "react-hot-toast";
 import Div100vh from "react-div-100vh";
 import {
@@ -22,14 +20,17 @@ import {
 } from "./styles";
 import { MdBugReport, MdQuestionAnswer } from "react-icons/md";
 import { AiFillEdit, AiOutlineFileDone } from "react-icons/ai";
-import { IoLogIn } from "react-icons/io5";
+import { IoLogIn, IoLogOut } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa";
 import { mirage } from "ldrs";
 import Bot from "./bot/main";
-import scanIcon from './assets/lensIcon.webp'
-import dnaIcon from './assets/Property1057_DNA.png'
-import quizIcon from './assets/Property050_Medical_Chat.png'
-import diagnoseIcon from './assets/Property052_Medical_App.png'
+import scanIcon from "./assets/lensIcon.webp";
+import dnaIcon from "./assets/Property1057_DNA.png";
+import quizIcon from "./assets/Property050_Medical_Chat.png";
+import diagnoseIcon from "./assets/Property052_Medical_App.png";
+import useLanguage from "./context/langContext";
+import { signOut } from "firebase/auth";
+
 const DashboardContainer = styled(animated.div)`
   position: relative;
   display: flex;
@@ -38,10 +39,11 @@ const DashboardContainer = styled(animated.div)`
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  height: 100%;
-  overflow:hidden;
+  height:100%;
+  overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
-  padding:0  ${(props) => props.theme.spacing.medium} 0 ${(props) => props.theme.spacing.medium};
+  padding: 0 ${(props) => props.theme.spacing.medium} 0
+    ${(props) => props.theme.spacing.medium};
   .med-history {
     width: 100%;
     position: relative;
@@ -51,7 +53,7 @@ const DashboardContainer = styled(animated.div)`
     flex-direction: column;
     gap: 10px;
     font-size: 13px;
-    border-radius:6px;
+    border-radius: 6px;
 
     .history-edit {
       position: absolute;
@@ -70,6 +72,7 @@ const DashboardContainer = styled(animated.div)`
     justify-content: center;
   }
 `;
+
 const IconButton = styled.button`
   position: relative;
   z-index: 1000;
@@ -118,17 +121,29 @@ const DashboardButton = styled(animated(Link))`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  &::active {
-    text-decoration: none;
+  text-decoration: none;
+
+  &:hover {
+    transform: scale(1.01);
+    transition: 0.3s ease-out;
   }
   svg {
     fill: ${(props) => props.theme.colors.onSurface};
   }
 `;
 
+const LanguageSelector = styled.select`
+  padding: ${(props) => props.theme.spacing.small};
+  border: 1px solid ${(props) => props.theme.colors.secondary};
+  border-radius: 4px;
+  background-color: ${(props) => props.theme.colors.background};
+  color: ${(props) => props.theme.colors.onSurface};
+`;
+
 const Dashboard: React.FC = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
+  const { language, setLanguage, t } = useLanguage();
 
   const [patientInfo, setPatientInfo] = useState({
     age: "",
@@ -157,14 +172,20 @@ const Dashboard: React.FC = () => {
       version: "1.0.0",
       date: "July 20, 2024",
       changes: [
-        "Added real-time scanning and image capture functionality",
-        "Implemented history feature for saved scans",
-        "Implemented a chatbot for personalized assistance; powered by Google's Gemini AI",
-        "Added Authentication page (Signup, Signin and Federated Auth(Google Oauth)",
-        "Integrated with firebase to store user details and scans",
-        "Integrated Google's Gemini AI for Image analysis and prediction",
-        "Added a health diagnostic agent powered by Google's Gemini AI",
-        "Added speech functionality",
+        t("Added real-time scanning and image capture functionality"),
+        t("Implemented history feature for saved scans"),
+        t(
+          "Implemented a chatbot for personalized assistance; powered by Google's Gemini AI"
+        ),
+        t(
+          "Added Authentication page (Signup, Signin and Federated Auth(Google Oauth)"
+        ),
+        t("Integrated with firebase to store user details and scans"),
+        t("Integrated Google's Gemini AI for Image analysis and prediction"),
+        t("Added a health diagnostic agent powered by Google's Gemini AI"),
+        t("Added speech functionality"),
+        t("Multilanguage support"),
+        t('Added Quiz')
       ],
     },
   ];
@@ -174,11 +195,13 @@ const Dashboard: React.FC = () => {
       setIsBugReportLoading(true);
       await reportBugHelper(bugDescription);
       setIsBugReportLoading(false);
-      toast.success("Bug report submitted successfully");
+      toast.success(t("Bug report submitted successfully"));
       setBugDescription("");
     } catch (error: any) {
       setIsBugReportLoading(false);
-      toast.error("Failed to submit bug report due to", error.message);
+      toast.error(
+        t("Failed to submit bug report due to") + " " + error.message
+      );
     }
   };
 
@@ -203,7 +226,7 @@ const Dashboard: React.FC = () => {
     };
 
     getPev();
-  }, []);
+  }, [currentUser, navigate]);
 
   const containerAnimation = useSpring({
     from: { opacity: 0 },
@@ -214,6 +237,16 @@ const Dashboard: React.FC = () => {
     mirage.register();
   }, []);
 
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      navigate("/auth");
+      toast.success("Logged out successfully");
+    } catch (error: any) {
+      toast.error("Failed to log out: " + parseError(error.message));
+    }
+  };
+
   return (
     <Div100vh>
       <DashboardContainer style={containerAnimation}>
@@ -223,31 +256,37 @@ const Dashboard: React.FC = () => {
             className="history-edit"
             onClick={() => navigate("/onboarding")}
           >
-            Edit
+            {t("Edit")}
             <AiFillEdit />
           </span>
-          <span>Age ー {patientInfo.age || "N/A"}</span>
-          <span>Gender ー {patientInfo.gender || "N/A"}</span>
-          <span>Medical History ー {patientInfo.medicalHistory || "N/A"}</span>
           <span>
-            Voice ー{" "}
+            {t("Age")} ー {patientInfo.age || "N/A"}
+          </span>
+          <span>
+            {t("Gender")} ー {patientInfo.gender || "N/A"}
+          </span>
+          <span>
+            {t("Medical History")} ー {patientInfo.medicalHistory || "N/A"}
+          </span>
+          <span>
+            {t("Voice")} ー{" "}
             {patientInfo.selectedVoice?.replace("Microsoft", "") || "N/A"}
           </span>
         </div>
         <div className="dash-btns">
           <DashboardButton to="/diagnose" style={{ background: "#045A69" }}>
-            <img src={diagnoseIcon} width={45}/>
-            Diagnose Me
+            <img src={diagnoseIcon} width={45} />
+            {t("Diagnose Me")}
           </DashboardButton>
-          <DashboardButton to="/scan" style={{ background: "#363566" }}>
-          <img src={scanIcon} width={45}/> Scan
+          <DashboardButton to="/scan" style={{ background: "#6C6D1B" }}>
+            <img src={scanIcon} width={45} /> {t("Scan")}
           </DashboardButton>
           <DashboardButton to="/quiz" style={{ background: "#0F7536" }}>
-          <img src={quizIcon} width={45}/> Quiz
+            <img src={quizIcon} width={45} /> {t("Quiz")}
           </DashboardButton>
         </div>
         <SettingItem>
-          <SettingLabel>Haptic Feedback</SettingLabel>
+          <SettingLabel>{t("Haptic Feedback")}</SettingLabel>
           <label className="switch">
             <input
               type="checkbox"
@@ -261,24 +300,47 @@ const Dashboard: React.FC = () => {
         </SettingItem>
 
         <SettingItem>
+          <SettingLabel>{t("Preferred Language")}</SettingLabel>
+          <LanguageSelector
+            value={language}
+            onChange={(e) => setLanguage(e.target.value)}
+          >
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="es">Español</option>
+            <option value="yo">Yorùbá</option>
+            <option value="it">Italiano</option>
+            <option value="zh">中文</option>
+            <option value="ar">العربية</option>
+            <option value="hi">हिन्दी</option>
+            <option value="pt">Português</option>
+            <option value="ru">Русский</option>
+            <option value="de">Deutsch</option>
+            <option value="ja">日本語</option>
+            <option value="sw">Kiswahili</option>
+            <option value="ko">한국어</option>
+          </LanguageSelector>
+        </SettingItem>
+
+        <SettingItem>
           <div className="st-i" onClick={() => setShowUpdateLog(true)}>
             <AiOutlineFileDone size={25} />
-            Update Logs
+            {t("Update Logs")}
           </div>
         </SettingItem>
         <SettingItem>
           <div className="st-i" onClick={() => setShowReportBug(true)}>
             <MdBugReport size={25} />
-            Report a Bug
+            {t("Report a Bug")}
           </div>
         </SettingItem>
         <AnimatedPage style={reportBugAnimation}>
           <CloseButton onClick={() => setShowReportBug(false)}>
             <FaArrowLeft />
           </CloseButton>
-          <h3>Report a Bug</h3>
+          <h3>{t("Report a Bug")}</h3>
           <TextArea
-            placeholder="Describe the bug you encountered..."
+            placeholder={t("Describe the bug you encountered...")}
             value={bugDescription}
             disabled={isBugReportLoading}
             onChange={(e) => setBugDescription(e.target.value)}
@@ -289,7 +351,7 @@ const Dashboard: React.FC = () => {
                 <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
               </>
             ) : (
-              "Submit Report"
+              t("Submit Report")
             )}
           </SubmitButton>
         </AnimatedPage>
@@ -298,11 +360,11 @@ const Dashboard: React.FC = () => {
           <CloseButton onClick={() => setShowUpdateLog(false)}>
             <FaArrowLeft />
           </CloseButton>
-          <h3>Update Logs</h3>
+          <h3>{t("Update Logs")}</h3>
           {updateLogs.map((log, index) => (
             <LogEntry key={index}>
               <h4>
-                Version {log.version} - {log.date}
+                {t("Version")} {log.version} - {log.date}
               </h4>
               <ul>
                 {log.changes.map((change, changeIndex) => (
@@ -314,22 +376,10 @@ const Dashboard: React.FC = () => {
         </AnimatedPage>
 
         <SettingItem>
-          {currentUser?.email ? (
-            <Logout />
-          ) : (
-            <Button
-              style={{
-                position: "absolute",
-                bottom: "10px",
-                display: "flex",
-                alignItems: "center",
-                gap: "3px",
-                borderRadius: "10px",
-              }}
-              onClick={() => navigate("/auth")}
-            >
-              <IoLogIn size={20} /> Login
-            </Button>
+          {currentUser?.email && (
+          <div className="st-i" onClick={logout}>
+              <IoLogOut size={24} />{ t('Logout')}
+            </div>
           )}
         </SettingItem>
         <div

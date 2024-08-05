@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import correctST from "./assets/correct.mp3";
 import failST from "./assets/fail.mp3";
 import Bot from "./bot/main";
+import useLanguage from "./context/langContext";
 
 const Quiz: React.FC = () => {
   const [settings, setSettings] = useState<TQuizSettings | null>({
@@ -32,6 +33,7 @@ const Quiz: React.FC = () => {
     numberOfQuestions: 10,
     field: "physiology",
   });
+  const { t, language } = useLanguage();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
@@ -73,7 +75,7 @@ const Quiz: React.FC = () => {
   const fetchQuestions = async (settings:TQuizSettings) => {
     try {
       setIsLoading(true);
-      const { data } = await axiosInstance.post("/generate-quiz", settings);
+      const { data } = await axiosInstance.post("/generate-quiz", {...settings, language});
 
       setQuestions(data);
       setIsLoading(false);
@@ -152,29 +154,29 @@ const Quiz: React.FC = () => {
 
   return (
     <QuizContainer>
-      <BackButton onClick={() => navigate("/")}>
+      <BackButton onClick={() => navigate("/dashboard")}>
         <FaArrowLeft fill="#ccc" />
       </BackButton>
       {showConfetti && <Confetti />}
       {!settings || questions.length === 0 ? (
         <SettingsForm onSubmit={handleSettingsSubmit}>
-          <h3 style={{ alignSelf: "center" }}>Quiz Settings</h3>
+          <h3 style={{ alignSelf: "center" }}>{t('Quiz Settings')}</h3>
           <SettingsGrid>
             <SettingsItem>
-              <label>Difficulty:</label>
+              <label>{t('Difficulty')}:</label>
               <select
                 value={difficulty}
                 onChange={(e) =>
                   setDifficulty(e.target.value as QuestionDifficulty)
                 }
               >
-                <option value="easy">Easy</option>
-                <option value="medium">Medium</option>
-                <option value="hard">Hard</option>
+                <option value="easy">{t('Easy')}</option>
+                <option value="medium">{t('Medium')}</option>
+                <option value="hard">{t('Hard')}</option>
               </select>
             </SettingsItem>
             <SettingsItem>
-              <label>Number of Questions:</label>
+              <label>{t('Number of Questions')}:</label>
               <input
                 type="number"
                 min="1"
@@ -184,7 +186,7 @@ const Quiz: React.FC = () => {
               />
             </SettingsItem>
             <SettingsItem>
-              <label>Field:</label>
+              <label>{t('Field')}:</label>
               <select
                 value={field}
                 onChange={(e) => setField(e.target.value as Field)}
@@ -203,7 +205,7 @@ const Quiz: React.FC = () => {
             {isLoading ? (
               <l-mirage size="60" speed="2.5" color="white"></l-mirage>
             ) : (
-              "Start Quiz"
+              t("Start Quiz")
             )}
           </Button>
         </SettingsForm>
@@ -213,7 +215,7 @@ const Quiz: React.FC = () => {
           <CongratsMessage>
             {correctAnswersCount >= ((Math.floor(questions.length-1)) / 2) ? (
               <>
-                🎉 Congratulations!
+                🎉 {t('Congratulations')}!
                 <FiThumbsUp />
               </>
             ) : (
@@ -243,7 +245,7 @@ const Quiz: React.FC = () => {
           {!expanded && questions.length > 2 && (
             <ExpandButton onClick={() => setExpanded(!expanded)}>
               {expanded ? <FiChevronUp /> : <FiChevronDown />}{" "}
-              {expanded ? "Hide" : "Read More"}
+              {expanded ? "Hide" : t("Read more")}
             </ExpandButton>
           )}
           {expanded && (
@@ -276,7 +278,7 @@ const Quiz: React.FC = () => {
             <FaArrowLeft fill="#ccc" />
           </BackButton>
           <DifficultyLabel difficulty={settings.difficulty}>
-            {settings.difficulty.toUpperCase()}
+            {t(settings.difficulty.charAt(0).toUpperCase()+settings.difficulty.slice(1))}
           </DifficultyLabel>
           <animated.div style={fadeIn}>
             {questions[currentQuestionIndex]?.text && (
@@ -575,7 +577,7 @@ const Button = styled.button`
   border: none;
   border-radius: 16px;
   cursor: pointer;
-  font-size: ${({ theme }) => theme.fontSizes.medium};
+  font-size: ${({ theme }) => theme.fontSizes.small};
   font-weight: bold;
   margin-top: ${({ theme }) => theme.spacing.large};
   transition: all 0.2s ease;

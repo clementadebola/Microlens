@@ -2,17 +2,22 @@ import React from "react";
 import styled from "styled-components";
 import { useAuth } from "./context/authContext";
 import { PolygonBg } from "./assets/svg";
-
+import { gradientAnimation } from "./styles";
 const AvatarItem = styled.div`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 8px;
-  width: 100%;
-  height:140px;
-  margin-bottom: 10px;
   position: relative;
-  
+  min-height: 110px;
+  width: 100%;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  animation: ${gradientAnimation} 5s infinite;
+  background: linear-gradient(45deg, #0e466b, #311d52, #0b7437);
+  background-size: 200% 200%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  margin-bottom: 2.8rem;
 `;
 
 const Avatar = styled.div`
@@ -29,7 +34,7 @@ const Avatar = styled.div`
   font-weight: bold;
   margin-right: 15px;
   overflow: hidden;
-  margin-top:18px;
+  margin-top:50px;
 `;
 
 const AvatarImage = styled.img`
@@ -44,7 +49,6 @@ const UserInfo = styled.div`
 `;
 
 const Username = styled.p`
-  margin-top:15px;
   font-weight: bold;
 `;
 
@@ -78,7 +82,6 @@ const UserAvatar = () => {
 
   return (
     <AvatarItem>
-      <PolygonBg />
       <CustomAvatar user={currentUser} />
       <UserInfo>
         <Username>{username}</Username>

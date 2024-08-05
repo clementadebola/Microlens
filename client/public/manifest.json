@@ -9,38 +9,38 @@
   "orientation": "any",
   "icons": [
     {
-      "src": "/logo_maskable/launchericon-72-72.png",
+      "src": "/launchericon-72-72.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_maskable/launchericon-96-96.png",
+      "src": "/launchericon-96-96.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any maskable"
     },
 
     {
-      "src": "/logo_maskable/launchericon-144x144.png",
+      "src": "/launchericon-144x144.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_maskable/launchericon-152x152.png",
+      "src": "/launchericon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_maskable/launchericon-192x192.png",
+      "src": "/launchericon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_maskable/launchericon-512x512.png",
+      "src": "/launchericon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -77,7 +77,7 @@
       "description": "Start a new microscope scan",
       "url": "/",
       "icons": [
-        { "src": "/logo_maskable/launchericon-192x192.png", "sizes": "192x192" }
+        { "src": "/launchericon-192x192.png", "sizes": "192x192" }
       ]
     }
   ],

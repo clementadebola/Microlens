@@ -66,4 +66,28 @@ export interface QuizSettings {
   difficulty: QuestionDifficulty;
   numberOfQuestions: number;
   field: Field;
+  language?: string;
 }
+
+
+export type Language = {
+  code: string;
+  name: string;
+};
+
+export const languages: Language[] = [
+  { code: 'en', name: 'English' },
+  { code: 'fr', name: 'Français' },
+  { code: 'es', name: 'Español' },
+  { code: 'yo', name: 'Yorùbá' },
+  { code: 'it', name: 'Italiano' },
+  { code: 'zh', name: '中文' },
+  { code: 'ar', name: 'العربية' },
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'pt', name: 'Português' },
+  { code: 'ru', name: 'Русский' },
+  { code: 'de', name: 'Deutsch' },
+  { code: 'ja', name: '日本語' },
+  { code: 'sw', name: 'Kiswahili' },
+  { code: 'ko', name: '한국어' },
+];

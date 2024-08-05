@@ -20,7 +20,7 @@ const Auth: React.FC = () => {
   const navigate = useNavigate();
   useEffect(() => {
     if (currentUser?.email) {
-      navigate("/");
+      navigate("/dashboard");
     }
   });
   const handleGoogleSignIn = async () => {
@@ -28,7 +28,7 @@ const Auth: React.FC = () => {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       toast.success("Signed in successfully");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(parseError(error.message));
     }

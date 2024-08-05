@@ -9,6 +9,7 @@ import toast from "react-hot-toast";
 import { dotPulse } from "ldrs";
 import { axiosInstance, removeAsterisks } from "../utils";
 import { LuSend } from "react-icons/lu";
+import useLanguage from "../context/langContext";
 
 const Container = styled.div`
   position: relative;
@@ -237,6 +238,7 @@ const Bot: React.FC = () => {
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [messageLoading, setMessageLoading] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const { t, language} = useLanguage();
   const springProps = useSpring({
     opacity: isCollapsed ? 0 : 1,
     transform: isCollapsed ? "scale(0)" : "scale(1)",
@@ -297,6 +299,7 @@ const Bot: React.FC = () => {
       setMessageLoading(true);
       const { data } = await axiosInstance.post(`/query`, {
         query,
+        language
       });
       setMessageLoading(false);
 
@@ -339,7 +342,7 @@ const Bot: React.FC = () => {
             <div>
               <Title>Jhmeel</Title>
               <Subtitle>
-                Online <l-ping size="20" speed="2" color="#16cf3b"></l-ping>
+                {t('Online')} <l-ping size="20" speed="2" color="#16cf3b"></l-ping>
               </Subtitle>
             </div>
           </div>
@@ -383,7 +386,7 @@ const Bot: React.FC = () => {
             autoFocus
             value={userInput}
             onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Ask a question..."
+            placeholder={t("Ask a question...")}
           />
           <SendButton
             ref={buttonRef}
@@ -404,7 +407,7 @@ const Bot: React.FC = () => {
               color:'#8690fc'            }}
             size={35}
           />
-          Ask Jhmeel
+         {t('Ask Jhmeel')}
         </CollapsedButton>
       </animated.div>
     </>

@@ -26,7 +26,7 @@ const SignIn: React.FC = () => {
 
   useEffect(() => {
     if (currentUser?.email) {
-      navigate("/");
+      navigate("/dashboard");
     }
   });
 
@@ -44,7 +44,7 @@ const SignIn: React.FC = () => {
       setSubmitLoading(true);
       await signInWithEmailAndPassword(auth, data.email, data.password);
       toast.success("Signed in successfully");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(parseError(error.message));
     } finally {
@@ -57,7 +57,7 @@ const SignIn: React.FC = () => {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       toast.success("Signed in successfully");
-      navigate("/");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(parseError(error.message));
     }
