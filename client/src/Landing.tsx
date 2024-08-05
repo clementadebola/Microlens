@@ -3,6 +3,8 @@ import styled, { ThemeProvider, createGlobalStyle } from "styled-components";
 import { useSpring, animated } from "react-spring";
 import Reveal from "react-reveal/Reveal";
 import health from "./assets/heath.gif";
+import { useNavigate } from "react-router-dom";
+
 
 const theme = {
   colors: {
@@ -212,6 +214,7 @@ const Footer = styled.footer`
 `;
 
 const Landing = () => {
+    const navigate = useNavigate();
   const [aiFeatures, setAiFeatures] = useState([
     "Advanced image recognition 🔍",
     "Natural language processing 🗣️",
@@ -275,7 +278,7 @@ const Landing = () => {
               bacterial identification for healthcare professionals and
               individuals alike.
             </HeroDescription>
-            <CTAButton style={ctaButtonAnimation}>Get Started 🎉</CTAButton>
+            <CTAButton style={ctaButtonAnimation} onClick={() => navigate("/auth")}>Get Started 🎉</CTAButton>
           </HeroContent>
 
           <IllustrationContainer style={illustrationAnimation}>
