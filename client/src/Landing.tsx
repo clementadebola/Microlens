@@ -54,9 +54,11 @@ const HeroMotto = styled.div`
   width:fit-content;
   padding: 5px 10px;
   font-weight: 400;
-  font-size: 12px;
+  font-size: 10px;
   font-family: mono-space;
   color: #ccc;
+   font-style: italic;
+  
 `;
 const Header = styled(animated.header)`
   ${glassEffect}
