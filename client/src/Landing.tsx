@@ -4,7 +4,7 @@ import styled, {
   keyframes,
   css,
 } from "styled-components";
-import { TbLogin2 } from "react-icons/tb";
+import { BiLogIn } from "react-icons/bi";
 import { useSpring, animated, config } from "react-spring";
 import { useTrail } from "react-spring";
 import { useNavigate } from "react-router-dom";
@@ -438,7 +438,7 @@ const Landing = () => {
                 background: "rgba(5, 57, 71, 0.5)",
               }}
               onClick={()=>navigate('/auth')}
-            > <TbLogin2 size={26} fill='#ccc' /></div>
+            > <BiLogIn  size={26} fill='#ccc' /></div>
          
         </Header>
 
