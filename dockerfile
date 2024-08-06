@@ -3,13 +3,13 @@ FROM node:20-alpine as client-build
 
 WORKDIR /app
 
-# Copy the entire client directory
+
 COPY client ./client
 
 WORKDIR /app/client
 
-# Install dependencies
-RUN npm install --force
+
+RUN npm install --legacy-peer-deps
 
 
 RUN npm run build
