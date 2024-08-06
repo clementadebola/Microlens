@@ -26,6 +26,7 @@ import correctST from "./assets/correct.mp3";
 import failST from "./assets/fail.mp3";
 import Bot from "./bot/main";
 import useLanguage from "./context/langContext";
+import Div100vh from "react-div-100vh";
 
 const Quiz: React.FC = () => {
   const [settings, setSettings] = useState<TQuizSettings | null>({
@@ -153,6 +154,7 @@ const Quiz: React.FC = () => {
   const questionsToShow = expanded ? questions : questions.slice(0, 2);
 
   return (
+    <Div100vh>
     <QuizContainer>
       <BackButton onClick={() => navigate("/dashboard")}>
         <FaArrowLeft fill="#ccc" />
@@ -336,6 +338,7 @@ const Quiz: React.FC = () => {
           <Bot />
         </div>
     </QuizContainer>
+    </Div100vh>
   );
 };
 
@@ -348,7 +351,9 @@ const QuizContainer = styled.div`
   margin: 0 auto;
   color: ${({ theme }) => theme.colors.onBackground};
   background-color: ${({ theme }) => theme.colors.background};
-  min-height: 100vh;
+  height: 100%;
+  overflow-x:hidden;
+  overflow-y:scroll;
 `;
 
 const DifficultyLabel = styled.div<{ difficulty: QuestionDifficulty }>`

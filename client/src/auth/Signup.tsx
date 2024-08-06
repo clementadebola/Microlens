@@ -10,7 +10,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { auth } from "../firebase";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import Div100vh from 'react-div-100vh'
 import {
   Container,

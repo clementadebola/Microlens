@@ -158,6 +158,7 @@ export const PasswordToggle = styled.span`
 `;
 
 export const SettingItem = styled.div`
+  position: relative;
   margin-bottom: 15px;
   width: 100%;
 
@@ -165,20 +166,20 @@ export const SettingItem = styled.div`
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
+    font-size: 15px;
     cursor: pointer;
   }
   .st-i:hover {
     background: rgba(15, 85, 155, 0.6);
     padding: 5px 10px;
-    border-radius: 6px;
+    border-radius: 8px;
     transition: all 0.3s ease-in-out;
   }
 `;
 
 export const SettingLabel = styled.label`
   display: block;
-  font-size: 13px;
+  font-size: 15px;
   margin-bottom: 5px;
 `;
 

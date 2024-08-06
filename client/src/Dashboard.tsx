@@ -35,15 +35,18 @@ const DashboardContainer = styled(animated.div)`
   position: relative;
   display: flex;
   max-width: 600px;
+  height: fit-content;
   margin: 0 auto;
   flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
-  height:100%;
   overflow: hidden;
   background-color: ${(props) => props.theme.colors.background};
   padding: 0 ${(props) => props.theme.spacing.medium} 0
     ${(props) => props.theme.spacing.medium};
+     @media (max-width: 768px) {
+      height: 100%;
+    }
   .med-history {
     width: 100%;
     position: relative;
@@ -54,6 +57,7 @@ const DashboardContainer = styled(animated.div)`
     gap: 10px;
     font-size: 13px;
     border-radius: 6px;
+   
 
     .history-edit {
       position: absolute;
@@ -185,7 +189,7 @@ const Dashboard: React.FC = () => {
         t("Added a health diagnostic agent powered by Google's Gemini AI"),
         t("Added speech functionality"),
         t("Multilanguage support"),
-        t('Added Quiz')
+        t("Added Quiz"),
       ],
     },
   ];
@@ -240,7 +244,7 @@ const Dashboard: React.FC = () => {
   const logout = async () => {
     try {
       await signOut(auth);
-      navigate("/auth");
+      navigate("/");
       toast.success("Logged out successfully");
     } catch (error: any) {
       toast.error("Failed to log out: " + parseError(error.message));
@@ -324,13 +328,13 @@ const Dashboard: React.FC = () => {
 
         <SettingItem>
           <div className="st-i" onClick={() => setShowUpdateLog(true)}>
-            <AiOutlineFileDone size={25} />
+            <AiOutlineFileDone fill="teal" size={26} />
             {t("Update Logs")}
           </div>
         </SettingItem>
         <SettingItem>
           <div className="st-i" onClick={() => setShowReportBug(true)}>
-            <MdBugReport size={25} />
+            <MdBugReport fill="red" size={26} />
             {t("Report a Bug")}
           </div>
         </SettingItem>
@@ -377,8 +381,20 @@ const Dashboard: React.FC = () => {
 
         <SettingItem>
           {currentUser?.email && (
-          <div className="st-i" onClick={logout}>
-              <IoLogOut size={24} />{ t('Logout')}
+            <div
+              style={{
+                position: "absolute",
+                display: "flex",
+                gap: "10px",
+                fontSize: "13px",
+                borderRadius: "8px",
+                padding: "5px 10px",
+                background: "rgba(5, 57, 71, 0.5)",
+              }}
+              onClick={logout}
+            >
+              <IoLogOut size={22} />
+              {t("Logout")}
             </div>
           )}
         </SettingItem>

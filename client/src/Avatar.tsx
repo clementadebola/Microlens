@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 import { useAuth } from "./context/authContext";
-import { PolygonBg } from "./assets/svg";
 import { gradientAnimation } from "./styles";
 const AvatarItem = styled.div`
   position: relative;

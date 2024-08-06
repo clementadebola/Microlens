@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { bouncy } from "ldrs";
-import logo from "./assets/logo.jpg";
+import logo from "./assets/logo.png";
 
 const LoaderRenderer = styled.div`
   width: 100%;

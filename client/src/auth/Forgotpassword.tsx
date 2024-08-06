@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { mirage } from "ldrs";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../firebase";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import {
   Container,
   Logo,

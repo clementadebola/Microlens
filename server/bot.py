@@ -5,7 +5,7 @@ genai.configure(api_key='AIzaSyD2sCWYP85Ov8kJlBSbyBoOaH3Iv7vBorQ')
 model = genai.GenerativeModel('gemini-pro')
 vision_model = genai.GenerativeModel('gemini-1.5-flash')
 
-def respond_to_query(query: str, image: str,is_concise: bool = False) -> str:
+def respond_to_query(query: str, image: str,is_concise: bool = False, lang:str ='en') -> str:
     if not is_concise:
         prompt = """
 You are a physician chatbot named Jhmeel. When given an image of a microorganism or a constituent of a biological sample, respond with the following information in a clear and structured format:
@@ -55,7 +55,7 @@ Ensure to replace the descriptions with actual information about the microorgani
     else:
         prompt = f"""
         You are a physician chatbot named Jhmeel.
-        Provide a brief, concise answer to the user's query.
+        Provide a brief, concise answer to the user's query in {lang} language.
         Include only the most essential information.
 
         If any information is not available, please state "Sorry, I can't answer that.".
@@ -81,6 +81,7 @@ def diagnose(request) -> tuple:
     Gender: {request['patientInfo']['gender']}
     Medical History: {request['patientInfo']['medicalHistory']}
     Current Symptoms: {request['complaint']}
+    language: {request['language'] or 'en'}
   
     Based on the above information, predict a diagnosis and recommended medication. Your response should be detailed and self explanatory even to a layman and must include these elements regardless of the input parameters.
     Format your response as follows:
@@ -110,9 +111,10 @@ def generate_quiz(settings):
     difficulty = settings['difficulty']
     number_of_questions = settings['numberOfQuestions']
     field = settings['field']
+    language = settings['language'] or 'en'
 
     prompt = f"""
-    Generate {number_of_questions} {difficulty} multiple-choice questions about {field} in the medical field. Each question should have 4 possible answers, with one correct answer. Format the output as a JSON array of objects, where each object has the following structure:
+    Generate {number_of_questions} {difficulty} multiple-choice questions about {field} in the medical field in {language} language. Question should be clinical word problem essentially diagnostic, for  Each question should have 4 possible answers, with one correct answer. Format the output as a JSON array of objects, where each object has the following structure:
      
         "id": "unique id", 
         "text": "question text", 

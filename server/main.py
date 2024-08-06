@@ -91,13 +91,13 @@ def get_response():
     if 'query' not in data:
         abort(400, description="Query is required.")
     
-    response = respond_to_query(data['query'], None, True)
+    response = respond_to_query(data['query'], None, True, data['language'])
     return jsonify({"response": response})
 
 @app.route('/diagnose', methods=['POST'])
 def get_diagnosis():
     data = request.json
-    print(data)
+
     diagnosis,medication = diagnose(data)
     
     return jsonify({

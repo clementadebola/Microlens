@@ -6,7 +6,7 @@ import toast from "react-hot-toast";
 import { mirage } from "ldrs";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { auth } from "../firebase";
-import logo from "../assets/logo.jpg";
+import logo from "../assets/logo.png";
 import { Container, Logo, Button, BackButton, Input,FederatedButton, Form, ErrorMessage, StyledLink, PasswordInputWrapper, PasswordToggle } from "../styles";
 import { parseError } from "../utils";
 import { useAuth } from "../context/authContext";
