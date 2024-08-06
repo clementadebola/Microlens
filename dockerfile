@@ -9,7 +9,7 @@ COPY client ./client
 WORKDIR /app/client
 
 # Install dependencies
-RUN npm install --legacy-peer-deps
+RUN npm install --force
 
 
 RUN npm run build
