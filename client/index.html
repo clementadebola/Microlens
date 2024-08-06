@@ -1,93 +1,95 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050813" />
-    <meta name="description" content="Microlens - Your AI-powered microscope companion" />
-    <link rel="apple-touch-icon" href="/launchericon-144-144.png" />
-    <link
-    rel="mask-icon"
-    type="image/png"
-    href="/launchericon-512-512.png"
-  />
-    <link rel="manifest" href="/manifest.json" />
-    <title>Microlens</title>
-    <style>
-      #installPrompt {
-        display: none;
-        position: fixed;
-        bottom: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        background-color: #4d87be;
-        padding: 15px;
-        border-radius: 5px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-        z-index: 1000;
-      }
-      #installButton {
-        background-color:#1e2329;
-        border: none;
-        color: #ccc;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 8px;
-      }
-    </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Microlens</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#050813" />
+  <meta name="description" content="Microlens - Your AI-powered microscope companion" />
+  <link rel="apple-touch-icon" href="/launchericon-144-144.png" />
+  <link rel="mask-icon" type="image/png" href="/launchericon-512-512.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Microlens</title>
+  <style>
+    #installPrompt {
+      width: 100%;
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #4d87be;
+      padding: 15px;
+      border-radius: 5px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 1000;
+    }
+
+    #installButton {
+      background-color: #1e2329;
+      border: none;
+      color: #ccc;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microlens</title>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+
 </html>
 
-  <body>
-    <div id="root"></div>
-    <div id="installPrompt">
-      <p>Install Microlens for a better experience!</p>
-      <button id="installButton">Install</button>
-    </div>
-    <script type="module" src="/src/main.tsx"></script>
-    <script>
-      let deferredPrompt;
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        document.getElementById('installPrompt').style.display = 'block';
-      });
+<body>
+  <div id="root"></div>
+  <div id="installPrompt">
+    <p>Install Microlens for a better experience!</p>
+    <button id="installButton">Install</button>
+  </div>
+  <script type="module" src="/src/main.tsx"></script>
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installPrompt').style.display = 'block';
+    });
 
-      document.getElementById('installButton').addEventListener('click', (e) => {
-        document.getElementById('installPrompt').style.display = 'none';
-        deferredPrompt.prompt();
-        deferredPrompt.userChoice.then((choiceResult) => {
-          if (choiceResult.outcome === 'accepted') {
-            console.log('User accepted the install prompt');
-          } else {
-            console.log('User dismissed the install prompt');
-          }
-          deferredPrompt = null;
-        });
+    document.getElementById('installButton').addEventListener('click', (e) => {
+      document.getElementById('installPrompt').style.display = 'none';
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the install prompt');
+        } else {
+          console.log('User dismissed the install prompt');
+        }
+        deferredPrompt = null;
       });
+    });
 
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then((registration) => {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, (err) => {
-              console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-      }
-    </script>
-  </body>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((registration) => {
+            console.log('ServiceWorker registration successful with scope: ', registration.scope);
+          }, (err) => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
+  </script>
+</body>
+
 </html>
