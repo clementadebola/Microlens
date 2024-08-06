@@ -12,7 +12,7 @@ import Druid from "./Blob";
 import { axiosInstance, parseEmail, removeAsterisks } from "./utils";
 import toast from "react-hot-toast";
 import lisen from "./assets/listen.sound.mp3";
-import drugListIcon from './assets/Property_medicine_prescription_and_pills.png'
+import drugListIcon from './assets/prescription_and_pills.png'
 import {
   FaMicrophone,
   FaKeyboard,

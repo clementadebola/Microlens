@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from "react";
-import styled, {
-  createGlobalStyle,
-  keyframes,
-  css,
-} from "styled-components";
+import styled, { createGlobalStyle, keyframes, css } from "styled-components";
 import { BiLogIn } from "react-icons/bi";
 import { useSpring, animated, config } from "react-spring";
 import { useTrail } from "react-spring";
@@ -42,10 +38,9 @@ const LContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-@media(max-width:767px){
- padding: ${(props) => props.theme.spacing.medium};
-
-}
+  @media (max-width: 767px) {
+    padding: ${(props) => props.theme.spacing.medium};
+  }
 `;
 
 const glassEffect = css`
@@ -54,13 +49,21 @@ const glassEffect = css`
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.2);
 `;
-
+const HeroMotto = styled.div`
+  ${glassEffect}
+  width:fit-content;
+  padding: 5px 10px;
+  font-weight: 400;
+  font-size: 12px;
+  font-family: mono-space;
+  color: #ccc;
+`;
 const Header = styled(animated.header)`
   ${glassEffect}
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: ${(props) => props.theme.spacing.small};
+  padding: 5px 10px;
   position: fixed;
   top: ${(props) => props.theme.spacing.medium};
   left: ${(props) => props.theme.spacing.medium};
@@ -92,6 +95,7 @@ const HeroSection = styled.section`
 
 const HeroContent = styled.div`
   z-index: 2;
+  flex: 1;
 `;
 
 const HeroTitle = styled(animated.h2)`
@@ -231,9 +235,8 @@ const FeatureCard = styled(animated.div)`
     box-shadow: 0 10px 20px rgba(134, 144, 252, 0.2);
   }
 `;
-
 const FeatureIcon = styled.div`
-  font-size: 3rem;
+  font-size: 2.5rem;
   color: ${(props) => props.theme.colors.primary};
   margin-bottom: ${(props) => props.theme.spacing.medium};
 `;
@@ -245,7 +248,7 @@ const FeatureTitle = styled.h3`
 `;
 
 const FeatureDescription = styled.p`
-  font-size: ${(props) => props.theme.fontSizes.medium};
+  font-size: ${(props) => props.theme.fontSizes.small};
 `;
 
 const AISection = styled.section`
@@ -255,13 +258,13 @@ const AISection = styled.section`
 `;
 
 const AITitle = styled(animated.h2)`
-  font-size: ${(props) => props.theme.fontSizes.xxlarge};
+  font-size: ${(props) => props.theme.fontSizes.xlarge};
   color: ${(props) => props.theme.colors.gemini};
   margin-bottom: ${(props) => props.theme.spacing.large};
 `;
 
 const AIDescription = styled(animated.p)`
-  font-size: ${(props) => props.theme.fontSizes.large};
+  font-size: ${(props) => props.theme.fontSizes.small};
   max-width: 800px;
   margin: 0 auto ${(props) => props.theme.spacing.large};
   line-height: 1.6;
@@ -279,7 +282,7 @@ const AIFeatureList = styled.ul`
 
 const AIFeatureItem = styled(animated.li)`
   ${glassEffect}
-  font-size: ${(props) => props.theme.fontSizes.medium};
+  font-size: ${(props) => props.theme.fontSizes.small};
   padding: ${(props) => props.theme.spacing.medium};
   transition: all 0.3s ease;
 
@@ -294,41 +297,17 @@ const Footer = styled.footer`
   padding: ${(props) => props.theme.spacing.large};
   text-align: center;
   margin-top: auto;
-`;
 
-const ChatbotContainer = styled.div`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 1000;
-`;
-
-const ChatbotButton = styled.button`
-  ${glassEffect}
-  background-color: ${(props) => props.theme.colors.primary};
-  color: ${(props) => props.theme.colors.onPrimary};
-  border: none;
-  padding: ${(props) => props.theme.spacing.small};
-  font-size: ${(props) => props.theme.fontSizes.large};
-  cursor: pointer;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.1);
+  p {
+    color: #ccc;
+    font-size: ${(props) => props.theme.fontSizes.small};
   }
 `;
 
 const Landing = () => {
   const navigate = useNavigate();
-  const [currentFeature, setCurrentFeature] = useState(0);
   const [aiFeatures] = useState([
-    "Advanced image recognition 🔍",
+    "Advanced sample image recognition 🔍",
     "Natural language processing 🗣️",
     "Real-time data analysis 📊",
     "Continuous learning and improvement 🧠",
@@ -369,12 +348,16 @@ const Landing = () => {
     },
   ];
 
+  const [featurePosition, setFeaturePosition] = useState(0);
+
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentFeature((prev) => (prev + 1) % features.length);
-    }, 5000);
+      setFeaturePosition((prev) => (prev + 1) % features.length);
+    }, 3000);
     return () => clearInterval(interval);
   }, [features.length]);
+
+  const duplicatedFeatures = [...features, ...features];
 
   const headerAnimation = useSpring({
     from: { opacity: 0, transform: "translateY(-50px)" },
@@ -415,12 +398,6 @@ const Landing = () => {
     config: config.molasses,
   });
 
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
-
-  const toggleChatbot = () => {
-    setIsChatbotOpen(!isChatbotOpen);
-  };
-
   return (
     <>
       <GlobalStyle />
@@ -428,22 +405,24 @@ const Landing = () => {
         <Header style={headerAnimation}>
           <Logo src={logo} alt="Logo" />
           <div
-              style={{
-                position: "absolute",
-                display: "flex",
-                gap: "10px",
-                fontSize: "13px",
-                borderRadius: "8px",
-                padding: "5px 10px",
-                background: "rgba(5, 57, 71, 0.5)",
-              }}
-              onClick={()=>navigate('/auth')}
-            > <BiLogIn  size={26} fill='#ccc' /></div>
-         
+            title="Login"
+            style={{
+              display: "flex",
+              borderRadius: "8px",
+              padding: "5px",
+              background: "rgba(12, 16, 35, 0.8)",
+              cursor: "pointer",
+            }}
+            onClick={() => navigate("/auth")}
+          >
+            {" "}
+            <BiLogIn size={26} fill="#ccc" />
+          </div>
         </Header>
 
         <HeroSection>
           <HeroContent>
+            <HeroMotto>Illuminating insignts...</HeroMotto>
             <HeroTitle style={heroContentAnimation}>
               Revolutionizing Medical Diagnostics
             </HeroTitle>
@@ -453,12 +432,13 @@ const Landing = () => {
               <img width={"80%"} src={DrugIcon} alt="Drug Icon" />
             </AnimatedIllustration>
             <HeroDescription style={heroContentAnimation}>
-              Microlens uses advanced AI to provide accurate diagnoses and
-              bacterial identification for healthcare professionals and
-              individuals alike.
+              Microlens uses Gemini to provide accurate diagnoses,
+              microorganisms identification and health education for healthcare
+              professionals and individuals alike.
             </HeroDescription>
 
             <CTAButton
+              title="Get Started"
               style={ctaButtonAnimation}
               onClick={() => navigate("/auth")}
             >
@@ -476,7 +456,7 @@ const Landing = () => {
             <BackgroundParticle
               key={index}
               size={Math.random() * 50 + 20}
-              color={'#8690fc'}
+              color={"#8690fc"}
               top={Math.random() * 100}
               left={Math.random() * 100}
               duration={Math.random() * 10 + 5}
@@ -492,11 +472,12 @@ const Landing = () => {
         <FeaturesSection id="features">
           <FeatureCardContainer
             style={{
-              transform: `translateX(-${currentFeature * 320}px)`,
-              width: `${features.length * 320}px`,
+              transform: `translateX(-${featurePosition * 320}px)`,
+              width: `${duplicatedFeatures.length * 320}px`,
+              transition: "transform 0.5s ease",
             }}
           >
-            {features.map((feature, index) => (
+            {duplicatedFeatures.map((feature, index) => (
               <FeatureCard key={index}>
                 <FeatureIcon>{feature.icon}</FeatureIcon>
                 <FeatureTitle>{feature.title}</FeatureTitle>
@@ -510,8 +491,8 @@ const Landing = () => {
           <AITitle style={aiTitleAnimation}>Powered by Gemini AI 🧠</AITitle>
           <AIDescription style={aiTitleAnimation}>
             Microlens integrates cutting-edge Gemini AI technology to provide
-            unparalleled accuracy in medical diagnostics and bacterial
-            identification.
+            unparalleled accuracy in medical diagnostics microorganisms
+            identification and health education.
           </AIDescription>
           <AIFeatureList>
             {aiFeatureTrail.map((props, index) => (
@@ -523,21 +504,9 @@ const Landing = () => {
         </AISection>
 
         <Footer id="contact">
-          <p>&copy; 2024 Microlens.</p>
-          <p>Contact: microlens@gmail.com📧</p>
+          <p>&copy; {new Date().getFullYear()} Microlens.</p>
+          <p>microlens@gmail.com📧</p>
         </Footer>
-
-        <ChatbotContainer>
-          <ChatbotButton onClick={toggleChatbot}>
-            <FaComments />
-          </ChatbotButton>
-          {isChatbotOpen && (
-            <div>
-              {/* Add your chatbot component here */}
-           
-            </div>
-          )}
-        </ChatbotContainer>
       </LContainer>
     </>
   );

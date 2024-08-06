@@ -12,58 +12,47 @@
       "src": "/launchericon-72-72.png",
       "sizes": "72x72",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/launchericon-96-96.png",
       "sizes": "96x96",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
-
     {
-      "src": "/launchericon-144x144.png",
+      "src": "/launchericon-48-48.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/launchericon-144-144.png",
       "sizes": "144x144",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/launchericon-152x152.png",
       "sizes": "152x152",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/launchericon-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     },
     {
       "src": "/launchericon-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/iPhone-X-localhost (4).png",
-      "sizes": "1280x720",
-      "type": "image/png"
-    },
-    {
-      "src": "/screenshots/iPhone-X-localhost (1).png",
-      "sizes": "1280x720",
-      "type": "image/png"
-    },
-    {
-      "src": "/screenshots/iPhone-X-localhost (7).png",
-      "sizes": "1280x720",
-      "type": "image/png"
-    }
-  ],
-  "categories": ["education", "productivity", "utilities"],
+  
+  "categories": ["Diagnostic","Health","HealthCare","education", "productivity", "utilities"],
   "lang": "en-US",
   "dir": "ltr",
   "prefer_related_applications": false,
@@ -74,8 +63,26 @@
     {
       "name": "New Scan",
       "short_name": "Scan",
-      "description": "Start a new microscope scan",
-      "url": "/",
+      "description": "Start a new scan",
+      "url": "/scan",
+      "icons": [
+        { "src": "/launchericon-192x192.png", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "Quiz",
+      "short_name": "Quiz",
+      "description": "Quiz",
+      "url": "/quiz",
+      "icons": [
+        { "src": "/launchericon-192x192.png", "sizes": "192x192" }
+      ]
+    },
+    {
+      "name": "Diagnose",
+      "short_name": "Diagnose",
+      "description": "Diagnose",
+      "url": "/diagnose",
       "icons": [
         { "src": "/launchericon-192x192.png", "sizes": "192x192" }
       ]
