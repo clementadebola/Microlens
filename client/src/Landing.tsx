@@ -16,6 +16,7 @@ import logo from "./assets/logo.png";
 import DnaIcon from "./assets/DNA.png";
 import DrugIcon from "./assets/prescription_and_pills.png";
 import ViralIcon from "./assets/viral.png";
+import { useAuth } from "./context/authContext";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
@@ -308,6 +309,10 @@ const Footer = styled.footer`
 
 const Landing = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
+  if (currentUser?.email) {
+    navigate("/dashboard");
+  }
   const [aiFeatures] = useState([
     "Advanced sample image recognition 🔍",
     "Natural language processing 🗣️",
