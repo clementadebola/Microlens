@@ -27,8 +27,8 @@ const OnboardingContainer = styled(animated.div)`
 const Form = styled.form`
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 400px;
+  width: 95%;
+  
 `;
 
 const Input = styled.input`
@@ -75,7 +75,7 @@ const Select = styled.select`
   border-radius: 10px;
   background-color: ${(props) => props.theme.colors.surface};
   color: ${(props) => props.theme.colors.onSurface};
-  font-size: ${(props) => props.theme.fontSizes.medium};
+  font-size: ${(props) => props.theme.fontSizes.small};
 `;
 
 const TextArea = styled.textarea`
@@ -114,7 +114,6 @@ const VoiceOption = styled.div`
   color: ${(props) => props.theme.colors.onSurface};
   cursor: pointer;
   width: 100%;
-  max-width: 400px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -152,6 +151,7 @@ const VoiceAccent = styled.p`
 
 const VoiceControls = styled.div`
   display: flex;
+  gap:5px;
   align-items: center;
 `;
 
@@ -410,9 +410,9 @@ const Onboarding: React.FC = () => {
                   <IconButton onClick={() => speakOutLoud(voice)}>
                     <FaPlay />
                   </IconButton>
-                  <IconButton onClick={() => setSelectedVoice(voice)}>
+                  <span onClick={() => setSelectedVoice(voice)}>
                     {selectedVoice?.name === voice.name ? <FaCheck /> : 'Use'}
-                  </IconButton>
+                  </span>
                 </VoiceControls>
               </VoiceOption>
             ))}
