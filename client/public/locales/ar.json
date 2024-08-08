@@ -31,6 +31,7 @@
   "Unsave": "إلغاء الحفظ",
   "Edit": "تحرير",
   "Bugs": "أخطاء",
+      "Time (seconds)":"الوقت (بالثواني)",
   "Describe the bug you encountered...": "وصف الخطأ الذي واجهته...",
   "Preferred Language": "اللغة المفضلة",
   "Added real-time scanning and image capture functionality": "تمت إضافة وظيفة المسح في الوقت الحقيقي والتقاط الصور",

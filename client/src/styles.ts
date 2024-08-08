@@ -159,7 +159,7 @@ export const PasswordToggle = styled.span`
 
 export const SettingItem = styled.div`
   position: relative;
-  margin-bottom: 15px;
+  margin-top: 20px;
   width: 100%;
 
   .st-i {

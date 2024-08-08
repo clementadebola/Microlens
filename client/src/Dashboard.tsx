@@ -50,13 +50,20 @@ const DashboardContainer = styled(animated.div)`
   .med-history {
     width: 100%;
     position: relative;
-    padding: ${(props) => props.theme.spacing.small};
+    padding: ${(props) => props.theme.spacing.medium};
     border: 1px solid ${(props) => props.theme.colors.secondary};
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    font-size: 13px;
-    border-radius: 6px;
+    gap: ${(props) => props.theme.spacing.small};
+    font-size: 14px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.1),
+      rgba(255, 255, 255, 0.05)
+    );
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
    
 
     .history-edit {
@@ -71,9 +78,45 @@ const DashboardContainer = styled(animated.div)`
   }
   .dash-btns {
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: ${(props) => props.theme.spacing.medium};
+    margin-top: ${(props) => props.theme.spacing.medium};
+  }
+`;
+
+const DashboardButton = styled(animated(Link))`
+  padding: ${(props) => props.theme.spacing.medium};
+  border-radius: 8px;
+  font-size: 14px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(10px);
+  color: ${(props) => props.theme.colors.onSurface};
+  text-decoration: none;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${(props) => props.theme.spacing.small};
+  transition: transform 0.3s ease-out;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+
+  img {
+    width: 50px;
+    height: 50px;
+  }
+
+  svg {
+    fill: ${(props) => props.theme.colors.onSurface};
   }
 `;
 
@@ -108,33 +151,6 @@ const CloseButton = styled(IconButton)`
   margin-bottom: 20px;
 `;
 
-const DashboardButton = styled(animated(Link))`
-  margin: ${(props) => props.theme.spacing.medium}
-    ${(props) => props.theme.spacing.small};
-  padding: ${(props) => props.theme.spacing.small};
-  border: none;
-  border-radius: 8px;
-  font-size: 12px;
-  height: 80px;
-  width: 120px;
-  background-color: ${(props) => props.theme.colors.primary};
-  color: ${(props) => props.theme.colors.onSurface};
-  text-decoration: none;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-
-  &:hover {
-    transform: scale(1.01);
-    transition: 0.3s ease-out;
-  }
-  svg {
-    fill: ${(props) => props.theme.colors.onSurface};
-  }
-`;
 
 const LanguageSelector = styled.select`
   padding: ${(props) => props.theme.spacing.small};

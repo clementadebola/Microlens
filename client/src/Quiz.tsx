@@ -33,12 +33,13 @@ const Quiz: React.FC = () => {
     difficulty: "medium",
     numberOfQuestions: 10,
     field: "physiology",
+    timeInSeconds: 15,
   });
   const { t, language } = useLanguage();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [userAnswers, setUserAnswers] = useState<(string | null)[]>([]);
-  const [timeLeft, setTimeLeft] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(settings?.timeInSeconds || 15);
   const [quizFinished, setQuizFinished] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -46,6 +47,7 @@ const Quiz: React.FC = () => {
   const [difficulty, setDifficulty] = useState<QuestionDifficulty>("medium");
   const [numberOfQuestions, setNumberOfQuestions] = useState(10);
   const [field, setField] = useState<Field>("physiology");
+  const [timeInSeconds, setTimeInSeconds] = useState<number>(15);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
 
   const correctSound = new Audio(correctST);
@@ -59,7 +61,7 @@ const Quiz: React.FC = () => {
           if (prev <= 0) {
             clearInterval(timer);
             handleNextQuestion();
-            return 15;
+            return settings?.timeInSeconds || 15;
           }
           return prev - 1;
         });
@@ -67,17 +69,19 @@ const Quiz: React.FC = () => {
 
       return () => clearInterval(timer);
     }
-  }, [currentQuestionIndex, questions]);
+  }, [currentQuestionIndex, questions, settings?.timeInSeconds]);
 
   useEffect(() => {
     mirage.register();
   }, []);
 
-  const fetchQuestions = async (settings:TQuizSettings) => {
+  const fetchQuestions = async (settings: TQuizSettings) => {
     try {
       setIsLoading(true);
-      const { data } = await axiosInstance.post("/generate-quiz", {...settings, language});
-
+      const { data } = await axiosInstance.post("/generate-quiz", {
+        ...settings,
+        language,
+      });
       setQuestions(data);
       setIsLoading(false);
     } catch (error: any) {
@@ -107,7 +111,7 @@ const Quiz: React.FC = () => {
   const handleNextQuestion = () => {
     if (currentQuestionIndex < questions.length - 1) {
       setCurrentQuestionIndex((prev) => prev + 1);
-      setTimeLeft(15);
+      setTimeLeft(settings?.timeInSeconds || 15);
       setSelectedAnswer(null);
     } else {
       handleQuizFinish();
@@ -125,13 +129,16 @@ const Quiz: React.FC = () => {
     }
   };
 
- 
-
   const handleSettingsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoading) {
-      setSettings({ difficulty, numberOfQuestions, field });
-      await fetchQuestions({ difficulty, numberOfQuestions, field });
+      setSettings({ difficulty, numberOfQuestions, field, timeInSeconds });
+      await fetchQuestions({
+        difficulty,
+        numberOfQuestions,
+        field,
+        timeInSeconds,
+      });
     }
   };
 
@@ -155,158 +162,172 @@ const Quiz: React.FC = () => {
 
   return (
     <Div100vh>
-    <QuizContainer>
-      <BackButton onClick={() => navigate("/dashboard")}>
-        <FaArrowLeft fill="#ccc" />
-      </BackButton>
-      {showConfetti && <Confetti />}
-      {!settings || questions.length === 0 ? (
-        <SettingsForm onSubmit={handleSettingsSubmit}>
-          <h3 style={{ alignSelf: "center" }}>{t('Quiz Settings')}</h3>
-          <SettingsGrid>
-            <SettingsItem>
-              <label>{t('Difficulty')}:</label>
-              <select
-                value={difficulty}
-                onChange={(e) =>
-                  setDifficulty(e.target.value as QuestionDifficulty)
-                }
-              >
-                <option value="easy">{t('Easy')}</option>
-                <option value="medium">{t('Medium')}</option>
-                <option value="hard">{t('Hard')}</option>
-              </select>
-            </SettingsItem>
-            <SettingsItem>
-              <label>{t('Number of Questions')}:</label>
-              <input
-                type="number"
-                min="1"
-                max="50"
-                value={numberOfQuestions}
-                onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
-              />
-            </SettingsItem>
-            <SettingsItem>
-              <label>{t('Field')}:</label>
-              <select
-                value={field}
-                onChange={(e) => setField(e.target.value as Field)}
-              >
-                <option value="physiology">Physiology</option>
-                <option value="anatomy">Anatomy</option>
-                <option value="microbiology">Microbiology</option>
-                <option value="pathology">Pathology</option>
-                <option value="hematology">Hematology</option>
-                <option value="histopathology">Histopathology</option>
-                <option value="chemical pathology">Chemical Pathology</option>
-              </select>
-            </SettingsItem>
-          </SettingsGrid>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? (
-              <l-mirage size="60" speed="2.5" color="white"></l-mirage>
-            ) : (
-              t("Start Quiz")
+      <QuizContainer>
+        <BackButton onClick={() => navigate("/dashboard")}>
+          <FaArrowLeft fill="#ccc" />
+        </BackButton>
+        {showConfetti && <Confetti />}
+        {!settings || questions.length === 0 ? (
+          <SettingsForm onSubmit={handleSettingsSubmit}>
+            <h3 style={{ alignSelf: "center" }}>{t("Quiz Settings")}</h3>
+            <SettingsGrid>
+              <SettingsItem>
+                <label>{t("Difficulty")}:</label>
+                <select
+                  value={difficulty}
+                  onChange={(e) =>
+                    setDifficulty(e.target.value as QuestionDifficulty)
+                  }
+                >
+                  <option value="easy">{t("Easy")}</option>
+                  <option value="medium">{t("Medium")}</option>
+                  <option value="hard">{t("Hard")}</option>
+                </select>
+              </SettingsItem>
+              <SettingsItem>
+                <label>{t("Time (seconds)")}:</label>
+                <input
+                  type="number"
+                  min="1"
+                  value={timeInSeconds}
+                  disabled={isLoading}
+                  onChange={(e) => setTimeInSeconds(parseInt(e.target.value))}
+                />
+              </SettingsItem>
+              <SettingsItemWide>
+                <label>{t("Number of Questions")}:</label>
+                <input
+                  type="number"
+                  min="1"
+                  max="50"
+                  value={numberOfQuestions}
+                  disabled={isLoading}
+                  onChange={(e) => setNumberOfQuestions(parseInt(e.target.value))}
+                />
+              </SettingsItemWide>
+              <SettingsItemWide>
+                <label>{t("Field")}:</label>
+                <select
+                  value={field}
+                  onChange={(e) => setField(e.target.value as Field)}
+                >
+                  <option value="physiology">Physiology</option>
+                  <option value="anatomy">Anatomy</option>
+                  <option value="microbiology">Microbiology</option>
+                  <option value="pathology">Pathology</option>
+                  <option value="hematology">Hematology</option>
+                  <option value="histopathology">Histopathology</option>
+                  <option value="chemical pathology">Chemical Pathology</option>
+                </select>
+              </SettingsItemWide>
+            </SettingsGrid>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <l-mirage size="60" speed="2.5" color="white"></l-mirage>
+              ) : (
+                t("Start Quiz")
+              )}
+            </Button>
+          </SettingsForm>
+        ) : quizFinished ? (
+          <ResultsContainer>
+            {correctAnswersCount > questions.length / 2 && <Confetti />}
+            <CongratsMessage>
+              {correctAnswersCount >= ((Math.floor(questions.length - 1)) / 2) ? (
+                <>
+                  🎉 {t("Congratulations")}!
+                  <FiThumbsUp />
+                </>
+              ) : (
+                <>
+                  😔 Try again next time! <FiThumbsDown />
+                </>
+              )}
+            </CongratsMessage>
+            <p>
+              You answered {correctAnswersCount} out of {questions.length}{" "}
+              questions correctly!
+            </p>
+            <ResultsList>
+              {questionsToShow.map((question, index) => (
+                <ResultItem
+                  key={index}
+                  isCorrect={userAnswers[index] === question.correctAnswer}
+                >
+                  <QuestionText>{question.text}</QuestionText>
+                  <AnswerText>Your answer: {userAnswers[index]}</AnswerText>
+                  <CorrectAnswerText>
+                    Correct answer: {question.correctAnswer}
+                  </CorrectAnswerText>
+                </ResultItem>
+              ))}
+            </ResultsList>
+            {!expanded && questions.length > 2 && (
+              <ExpandButton onClick={() => setExpanded(!expanded)}>
+                {expanded ? <FiChevronUp /> : <FiChevronDown />}{" "}
+                {expanded ? "Hide" : t("Read more")}
+              </ExpandButton>
             )}
-          </Button>
-        </SettingsForm>
-      ) : quizFinished ? (
-        <ResultsContainer>
-          {correctAnswersCount > questions.length / 2 && <Confetti />}
-          <CongratsMessage>
-            {correctAnswersCount >= ((Math.floor(questions.length-1)) / 2) ? (
-              <>
-                🎉 {t('Congratulations')}!
-                <FiThumbsUp />
-              </>
-            ) : (
-              <>
-                😔 Try again next time! <FiThumbsDown />
-              </>
+            {expanded && (
+              <animated.div style={expandProps}>
+                <ResultsList>
+                  {questions.slice(2).map((question, index) => (
+                    <ResultItem
+                      key={index + 2}
+                      isCorrect={
+                        userAnswers[index + 2] === question.correctAnswer
+                      }
+                    >
+                      <QuestionText>{question.text}</QuestionText>
+                      <AnswerText>
+                        Your answer: {userAnswers[index + 2]}
+                      </AnswerText>
+                      <CorrectAnswerText>
+                        Correct answer: {question.correctAnswer}
+                      </CorrectAnswerText>
+                    </ResultItem>
+                  ))}
+                </ResultsList>
+              </animated.div>
             )}
-          </CongratsMessage>
-          <p>
-            You answered {correctAnswersCount} out of {questions.length}{" "}
-            questions correctly!
-          </p>
-          <ResultsList>
-            {questionsToShow.map((question, index) => (
-              <ResultItem
-                key={index}
-                isCorrect={userAnswers[index] === question.correctAnswer}
-              >
-                <QuestionText>{question.text}</QuestionText>
-                <AnswerText>Your answer: {userAnswers[index]}</AnswerText>
-                <CorrectAnswerText>
-                  Correct answer: {question.correctAnswer}
-                </CorrectAnswerText>
-              </ResultItem>
-            ))}
-          </ResultsList>
-          {!expanded && questions.length > 2 && (
-            <ExpandButton onClick={() => setExpanded(!expanded)}>
-              {expanded ? <FiChevronUp /> : <FiChevronDown />}{" "}
-              {expanded ? "Hide" : t("Read more")}
-            </ExpandButton>
-          )}
-          {expanded && (
-            <animated.div style={expandProps}>
-              <ResultsList>
-                {questions.slice(2).map((question, index) => (
-                  <ResultItem
-                    key={index + 2}
-                    isCorrect={
-                      userAnswers[index + 2] === question.correctAnswer
-                    }
-                  >
-                    <QuestionText>{question.text}</QuestionText>
-                    <AnswerText>
-                      Your answer: {userAnswers[index + 2]}
-                    </AnswerText>
-                    <CorrectAnswerText>
-                      Correct answer: {question.correctAnswer}
-                    </CorrectAnswerText>
-                  </ResultItem>
-                ))}
-              </ResultsList>
-            </animated.div>
-          )}
-          <Button onClick={() => window.location.reload()}>Retry Quiz</Button>
-        </ResultsContainer>
-      ) : (
-        <>
-          <BackButton onClick={()=>window.location.reload()}>
-            <FaArrowLeft fill="#ccc" />
-          </BackButton>
-          <DifficultyLabel difficulty={settings.difficulty}>
-            {t(settings.difficulty.charAt(0).toUpperCase()+settings.difficulty.slice(1))}
-          </DifficultyLabel>
-          <animated.div style={fadeIn}>
-            {questions[currentQuestionIndex]?.text && (
-              <Card>
-                <QuestionHeader>
-                  <h3>
-                    Question {currentQuestionIndex + 1}/{questions.length}
-                  </h3>
+            <Button onClick={() => window.location.reload()}>Retry Quiz</Button>
+          </ResultsContainer>
+        ) : (
+          <>
+            <BackButton onClick={() => window.location.reload()}>
+              <FaArrowLeft fill="#ccc" />
+            </BackButton>
+            <DifficultyLabel difficulty={settings.difficulty}>
+              {t(
+                settings.difficulty.charAt(0).toUpperCase() +
+                  settings.difficulty.slice(1)
+              )}
+            </DifficultyLabel>
+            <animated.div style={fadeIn}>
+              {questions[currentQuestionIndex]?.text && (
+                <Card>
+                  <QuestionHeader>
+                    <h3>
+                      Question {currentQuestionIndex + 1}/{questions.length}
+                    </h3>
 
-                  <div className="floader">
-                    <div className="face">
-                      <div className="fcircle"></div>
+                    <div className="floader">
+                      <div className="face">
+                        <div className="fcircle"></div>
+                      </div>
+                      <Timer>
+                        <FiClock />
+                        <span>{timeLeft}s</span>
+                      </Timer>
                     </div>
-                    <Timer>
-                      <FiClock />
-                      <span>{timeLeft}s</span>
-                    </Timer>
-                  </div>
-                </QuestionHeader>
-                <QuestionText>
-                  {questions[currentQuestionIndex]?.text}
-                </QuestionText>
-                <AnswerList>
-                  {questions[currentQuestionIndex]?.answers.map(
-                    (answer, index) => (
-                      <AnswerButton
+                  </QuestionHeader>
+                  <QuestionText>
+                    {questions[currentQuestionIndex]?.text}
+                  </QuestionText>
+                  <AnswerList>
+                    {questions[currentQuestionIndex]?.answers.map(
+                      (answer, index) => (
+                        <AnswerButton
                         key={index}
                         onClick={() => handleAnswerSelect(answer)}
                         isAnswer={selectedAnswer === answer}
@@ -319,15 +340,15 @@ const Quiz: React.FC = () => {
                       >
                         {answer || "N/A"}
                       </AnswerButton>
-                    )
-                  )}
-                </AnswerList>
-              </Card>
-            )}
-          </animated.div>
-        </>
-      )}
-       <div
+                      )
+                    )}
+                  </AnswerList>
+                </Card>
+              )}
+            </animated.div>
+          </>
+        )}
+        <div
           style={{
             padding: "10px",
             width: "100%",
@@ -337,7 +358,7 @@ const Quiz: React.FC = () => {
         >
           <Bot />
         </div>
-    </QuizContainer>
+      </QuizContainer>
     </Div100vh>
   );
 };
@@ -352,8 +373,8 @@ const QuizContainer = styled.div`
   color: ${({ theme }) => theme.colors.onBackground};
   background-color: ${({ theme }) => theme.colors.background};
   height: 100%;
-  overflow-x:hidden;
-  overflow-y:scroll;
+  overflow-x: hidden;
+  overflow-y: scroll;
 `;
 
 const DifficultyLabel = styled.div<{ difficulty: QuestionDifficulty }>`
@@ -381,7 +402,7 @@ const SettingsForm = styled.form`
 
 const SettingsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: ${({ theme }) => theme.spacing.medium};
 `;
 
@@ -405,6 +426,10 @@ const SettingsItem = styled.div`
     border-radius: 16px;
     font-size: ${({ theme }) => theme.fontSizes.small};
   }
+`;
+
+const SettingsItemWide = styled(SettingsItem)`
+  grid-column: span 2;
 `;
 
 const Card = styled.div`
@@ -432,7 +457,7 @@ const Timer = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.small};
   color: ${({ theme }) => theme.colors.primary};
   animation: beat 1s infinite;
-  color:#fff;
+  color: #fff;
 
   svg {
     margin-right: ${({ theme }) => theme.spacing.small};
@@ -548,7 +573,7 @@ const ResultsList = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.medium};
   width: 100%;
-  margin-top:5px;
+  margin-top: 5px;
 `;
 
 const ResultItem = styled.div<{ isCorrect: boolean }>`

@@ -9,7 +9,7 @@ const AvatarItem = styled.div`
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
   animation: ${gradientAnimation} 5s infinite;
-  background: linear-gradient(45deg, #0e466b, #311d52, #0b7437);
+  background: linear-gradient(90deg, #045A69, #3E3F12, #0F7536);
   background-size: 200% 200%;
   display: flex;
   flex-direction: column;

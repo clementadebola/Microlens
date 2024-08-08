@@ -66,6 +66,7 @@ export interface QuizSettings {
   difficulty: QuestionDifficulty;
   numberOfQuestions: number;
   field: Field;
+  timeInSeconds:number;
   language?: string;
 }
 
