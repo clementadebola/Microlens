@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSpring, animated, config } from "react-spring";
 import {
   FiClock,
-  FiSettings,
   FiThumbsUp,
   FiThumbsDown,
   FiChevronDown,
