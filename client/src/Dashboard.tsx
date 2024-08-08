@@ -35,7 +35,7 @@ const DashboardContainer = styled(animated.div)`
   position: relative;
   display: flex;
   max-width: 600px;
-  height: fit-content;
+  height: 100%;
   margin: 0 auto;
   flex-direction: column;
   align-items: flex-start;
@@ -44,9 +44,7 @@ const DashboardContainer = styled(animated.div)`
   background-color: ${(props) => props.theme.colors.background};
   padding: 0 ${(props) => props.theme.spacing.medium} 0
     ${(props) => props.theme.spacing.medium};
-     @media (max-width: 768px) {
-      height: 100%;
-    }
+    
   .med-history {
     width: 100%;
     position: relative;
@@ -268,7 +266,6 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <Div100vh>
       <DashboardContainer style={containerAnimation}>
         <UserAvatar />
         <div className="med-history">
@@ -425,7 +422,6 @@ const Dashboard: React.FC = () => {
           <Bot />
         </div>
       </DashboardContainer>
-    </Div100vh>
   );
 };
 

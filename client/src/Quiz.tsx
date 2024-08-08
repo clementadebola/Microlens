@@ -8,7 +8,7 @@ import {
   FiChevronDown,
   FiChevronUp,
 } from "react-icons/fi";
-import styled, { keyframes, ThemeProvider } from "styled-components";
+import styled, { keyframes } from "styled-components";
 import Confetti from "react-confetti";
 import { BackButton } from "./styles";
 import { FaArrowLeft } from "react-icons/fa";
