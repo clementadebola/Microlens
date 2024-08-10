@@ -77,7 +77,7 @@ def diagnose(request) -> tuple:
     Current Symptoms: {request['complaint']}
     language: {request['language'] or 'en'}
   
-    Based on the above information, predict a diagnosis and recommended medication. Your response should be detailed and self explanatory even to a layman and must include these elements regardless of the input parameters.
+    Based on the above information (my personal information), predict a diagnosis and recommended medication. Your response should be detailed and self explanatory even to a layman and must include these elements regardless of the input parameters.
     Format your response as follows:
     Diagnosis: [Your probable diagnosis here (In broad and explanatory terms)]
     Medication: [List medications, separated by commas]

@@ -133,8 +133,7 @@ const CTAButton = styled(animated.button)`
   background-color: ${(props) => props.theme.colors.primary};
   color: ${(props) => props.theme.colors.onPrimary};
   border: none;
-  padding: ${(props) => props.theme.spacing.small}
-    ${(props) => props.theme.spacing.medium};
+  padding: ${(props) => props.theme.spacing.medium};
   font-size: ${(props) => props.theme.fontSizes.small};
   cursor: pointer;
   border-radius: 30px;
