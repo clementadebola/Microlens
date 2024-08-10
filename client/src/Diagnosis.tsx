@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useSpring, animated } from "@react-spring/web";
 import SpeechRecognition, {
   useSpeechRecognition,
@@ -12,7 +12,7 @@ import Druid from "./Blob";
 import { axiosInstance, parseEmail, removeAsterisks } from "./utils";
 import toast from "react-hot-toast";
 import lisen from "./assets/listen.sound.mp3";
-import drugListIcon from './assets/prescription_and_pills.png'
+import drugListIcon from "./assets/prescription_and_pills.png";
 import {
   FaMicrophone,
   FaKeyboard,
@@ -25,6 +25,7 @@ import { useNavigate } from "react-router-dom";
 import { mirage } from "ldrs";
 import Div100vh from "react-div-100vh";
 import useLanguage from "./context/langContext";
+import { BiInfoCircle } from "react-icons/bi";
 
 const DiagnosisContainer = styled(animated.div)`
   display: flex;
@@ -129,6 +130,23 @@ const DiagnosisResult = styled(animated.div)`
   width: 100%;
 `;
 
+const pointAnimation = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(10px); }
+`;
+
+const AnimatedFinger = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const Emoji = styled.span`
+  font-size: 24px;
+  animation: ${pointAnimation} 1s ease-in-out infinite;
+`;
+
 const DiagnosisPage: React.FC = () => {
   const { currentUser } = useAuth();
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -206,11 +224,11 @@ const DiagnosisPage: React.FC = () => {
 
   const speakDiagnosis = (diagnosisData: any) => {
     SpeechRecognition.stopListening();
-  
-    const text = `${t('Your diagnosis is')} ${
-      diagnosisData.diagnosis
-    }. ${t('Recommended medications are')} ${diagnosisData.medication.join(", ")}.`;
-    
+
+    const text = `${t("Your diagnosis is")} ${diagnosisData.diagnosis}. ${t(
+      "Recommended medications are"
+    )} ${diagnosisData.medication.join(", ")}.`;
+
     setIsSpeaking(true);
     speak({
       text,
@@ -243,6 +261,7 @@ const DiagnosisPage: React.FC = () => {
       handleDiagnosis(textInput);
     }
   };
+
   useEffect(() => {
     return () => {
       cancel();
@@ -256,13 +275,44 @@ const DiagnosisPage: React.FC = () => {
   if (!browserSupportsSpeechRecognition) {
     return <span>Your browser doesn't support speech recognition.</span>;
   }
+
   const userGender = currentUserPayload?.gender.toLowerCase();
   const title =
     userGender == "male" ? "Mr" : userGender == "female" ? "Mrs" : "";
-  const greetings = `${t('Good day')} ${title} ${
+  const greetings = `${t("Good day")} ${title} ${
     currentUser?.displayName?.split(" ")[0] || parseEmail(currentUser?.email)
-  }, ${t('how may I help')}`;
+  }, ${t("how may I help")}`;
 
+  useEffect(() => {
+    const selectVoice = () => 
+      selectedVoice
+        ? window.speechSynthesis.getVoices().find(voice => voice.name === selectedVoice)
+        : undefined;
+  
+    const speakText = (text) => {
+      speak({
+        text,
+        voice: selectVoice(),
+        onEnd: () => setIsSpeaking(false),
+      });
+    };
+  
+    const initSpeech = () => {
+      setIsSpeaking(true);
+      speakText(greetings);
+      speakText("Please provide adequate information of your symptoms for accurate diagnosis.");
+    };
+ 
+    if (window.speechSynthesis.getVoices().length > 0) {
+      initSpeech();
+    } else {
+      window.speechSynthesis.onvoiceschanged = initSpeech;
+    }
+  
+    return () => {
+      window.speechSynthesis.cancel(); 
+    };
+  }, [selectedVoice, greetings]);
 
   return (
     <Div100vh>
@@ -283,7 +333,7 @@ const DiagnosisPage: React.FC = () => {
               active={inputMethod === "voice"}
               onClick={() => setInputMethod("voice")}
             >
-              <FaMicrophone /> {t('Voice')}
+              <FaMicrophone /> {t("Voice")}
             </ToggleButton>
             <ToggleButton
               active={inputMethod === "text"}
@@ -292,17 +342,20 @@ const DiagnosisPage: React.FC = () => {
                 toggleListening();
               }}
             >
-              <FaKeyboard /> {t('Text')}
+              <FaKeyboard /> {t("Text")}
             </ToggleButton>
           </InputToggle>
           {inputMethod === "voice" ? (
             <>
               {inputMethod === "voice" && (
-                <span className="dots_loader" onClick={toggleListening}>
-                  {listening
-                    ? t("Click to Stop Listening")
-                    : t("Click and Start Speaking")}
-                </span>
+                <AnimatedFinger onClick={toggleListening}>
+                  <span className="dots_loader">
+                    {listening
+                      ? t("Click to Stop Listening")
+                      : t("Click and Start Speaking")}
+                  </span>
+                  {!listening && <Emoji>👆</Emoji>}
+                </AnimatedFinger>
               )}
               {listening && (
                 <TranscriptBox
@@ -329,9 +382,8 @@ const DiagnosisPage: React.FC = () => {
                 <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
               ) : (
                 <>
-                  {" "}
                   <FaPaperPlane style={{ marginRight: "8px" }} />
-                  {t('Get Diagnosis')}
+                  {t("Get Diagnosis")}
                 </>
               )}
             </SubmitButton>
@@ -356,12 +408,26 @@ const DiagnosisPage: React.FC = () => {
             <p style={{ fontSize: "13px" }}>
               {removeAsterisks(diagnosis.diagnosis)}
             </p>
-            <h4 style={{display:'flex',alignItems:'center', gap:'2px'}}> <img width={45} src={drugListIcon}/> {t('Recommended Medication')}</h4>
+            <h4 style={{ display: "flex", alignItems: "center", gap: "2px" }}>
+              <img width={45} src={drugListIcon} />
+              {t("Recommended Medication")}
+            </h4>
             <ul style={{ fontSize: "13px" }}>
               {diagnosis.medication.map((med: string, index: number) => (
                 <li key={index}>{removeAsterisks(med)}</li>
               ))}
             </ul>
+            <p
+              style={{
+                padding: "10px 20px",
+                color: "#ccc",
+                borderLeft: "2px solid #834",
+                fontSize: '12px'
+              }}
+            >
+              NB: <BiInfoCircle /> Always verify any diagnosis or treatment
+              recommendations with a qualified healthcare provider.
+            </p>
           </DiagnosisResult>
         )}
       </DiagnosisContainer>

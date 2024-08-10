@@ -69,7 +69,7 @@ const SignIn: React.FC = () => {
       <BackButton onClick={() => navigate("/auth")}>
         <FaArrowLeft size={22} color="#ccc"/>
       </BackButton>
-      <Logo src={logo} alt="Microlens" />
+      <Logo src={logo} alt="Microlens" loading="lazy"/>
       <h2>Sign In</h2>
       <FederatedButton onClick={handleGoogleSignIn}><svg
           xmlns="https://www.w3.org/2000/svg"

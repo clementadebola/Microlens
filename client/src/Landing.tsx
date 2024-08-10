@@ -413,7 +413,7 @@ const Landing = () => {
       <GlobalStyle />
       <LContainer>
         <Header style={headerAnimation}>
-          <Logo src={logo} alt="Logo" />
+          <Logo src={logo} alt="Logo" loading="lazy"/>
           <div
             style={{
               display: "flex",
@@ -443,7 +443,7 @@ const Landing = () => {
             <AnimatedIllustration
               style={{ width: "80px", height: "80px", position: "absolute" }}
             >
-              <img width={"80%"} src={DrugIcon} alt="Drug Icon" />
+              <img loading="lazy" width={"80%"} src={DrugIcon} alt="Drug Icon" />
             </AnimatedIllustration>
             <HeroMotto>Illuminating insignts...</HeroMotto>
             <HeroTitle style={heroContentAnimation}>
@@ -477,7 +477,7 @@ const Landing = () => {
 
           <IllustrationContainer style={illustrationAnimation}>
             <AnimatedIllustration>
-              <img className="dnaImg" src={DnaIcon} alt="DNA Icon" />
+              <img loading="lazy" className="dnaImg" src={DnaIcon} alt="DNA Icon" />
             </AnimatedIllustration>
           </IllustrationContainer>
 
@@ -502,7 +502,7 @@ const Landing = () => {
               bottom: "-80px",
             }}
           >
-            <img width={"150px"} src={ViralIcon} alt="Viral Icon" />
+            <img width={"150px"} loading="lazy" src={ViralIcon} alt="Viral Icon" />
           </AnimatedIllustration>
         </HeroSection>
 

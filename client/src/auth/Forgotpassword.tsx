@@ -55,7 +55,7 @@ const ForgotPassword: React.FC = () => {
       <BackButton onClick={() => navigate("/signin")}>
         <FaArrowLeft size={22} color="#ccc" />
       </BackButton>
-      <Logo src={logo} alt="Microlens" />
+      <Logo src={logo} alt="Microlens" loading="lazy"/>
       <h2>Reset Password</h2>
       <Form onSubmit={handleSubmit(onSubmit)}>
         <Input

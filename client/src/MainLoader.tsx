@@ -25,7 +25,7 @@ const MainLoader = () => {
   return (
 
     <LoaderRenderer>
-        <Logo src={logo} alt="Microlens" /> 
+        <Logo src={logo} alt="Microlens" loading="lazy"/> 
       <l-bouncy size="35" speed="2" color="grey"></l-bouncy>
     </LoaderRenderer>
   );

@@ -36,7 +36,7 @@ const Auth: React.FC = () => {
   return (
     <Div100vh>
 <Container>
-      <Logo src={logo} alt="Microlens" />
+      <Logo src={logo} alt="Microlens" loading="lazy"/>
       <FederatedButton onClick={handleGoogleSignIn}>
         <svg
           xmlns="https://www.w3.org/2000/svg"

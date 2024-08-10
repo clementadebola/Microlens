@@ -157,6 +157,7 @@ const ProgressCircle = styled.svg`
   position: absolute;
   top: 0;
   left: 0;
+  z-index:100;
   transform: rotate(-90deg);
 `;
 
@@ -211,6 +212,7 @@ const CloseButtonH = styled.button`
   color: #ffffff;
   font-size: 18px;
   margin-top: 10px;
+  margin-left:10px;
   margin-bottom: 20px;
 `;
 const TriggerCont = styled.div`
@@ -817,11 +819,11 @@ const Scanner: React.FC = () => {
                 <>
                   <MarkdownContent>
                     <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                      {scannedResult.prediction}
+                      {scannedResult?.prediction}
                     </ReactMarkdown>
                   </MarkdownContent>
 
-                  {!scannedResult.prediction.includes("Invalid") && (
+                  {!scannedResult?.prediction.includes("Invalid") && (
                     <button
                       disabled={resultSaveLoading}
                       onClick={() => {
@@ -834,6 +836,7 @@ const Scanner: React.FC = () => {
                         alignSelf: "center",
                         cursor: "pointer",
                         padding: "10px 20px",
+                        marginTop:'20px',
                         borderRadius: "12px",
                         background: "#8690fc",
                         color: "#fff",

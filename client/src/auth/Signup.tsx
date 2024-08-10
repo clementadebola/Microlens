@@ -87,7 +87,7 @@ const SignUp: React.FC = () => {
       <BackButton onClick={() => navigate("/auth")}>
         <FaArrowLeft size={22} color="#ccc"/>
       </BackButton>
-      <Logo src={logo} alt="Microlens" />
+      <Logo src={logo} alt="Microlens" loading="lazy"/>
       <h2>Sign Up</h2>
       <FederatedButton onClick={handleGoogleSignUp}>
         <svg

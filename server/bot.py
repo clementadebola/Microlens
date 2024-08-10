@@ -1,3 +1,4 @@
+
 import google.generativeai as genai
 from flask import abort
 import os
@@ -8,40 +9,40 @@ vision_model = genai.GenerativeModel('gemini-1.5-flash')
 def respond_to_query(query: str, image: str,is_concise: bool = False, lang:str ='en') -> str:
     if not is_concise:
         prompt = """
-        NB: Ensure to return the information in a beautifully formatted markdown, with each field on a new line
-        
-        Ensure to return:
-        
-    confidence: Accuracy of your prediction in % 
-    Imaging Type:  Microorganism
-    prediction: Name of the organism, biological entity, or type of medical imaging,
-    metaInfo: 
-        Species: The species of the organism
-        Domain: The domain of the organism (Bacteria, Archaea, or Eukarya)
-        Disease(s): The disease(s) it causes, if any
-        Transmission: How the organism is transmitted
-        Diagnosis: Methods used to diagnose the diseases caused by the organism
-        Symptoms: Common symptoms of the diseases
-        Treatment: Drugs and treatments for the diseases
-        Prevention: Methods to prevent infection or spread
-        Habitat: The natural environment or typical location where the organism is found
-        Morphology: Physical structure and form of the organism
-        Size: Dimensions of the organism, often in micrometers
-        Shape: Form of the organism"
-        Oxygen Requirement: Whether the organism is aerobic, anaerobic, or facultative anaerobe
-        Growth Temperature: Optimal temperature range for growth
-        Colony Characteristics: Appearance of colonies on culture media
-        Virulence Factors: Molecules produced by pathogens contributing to the pathogenicity
-        Genome Size: Size of the organism's genome
-        GC Content: Percentage of guanine and cytosine in the DNA
-        Replication: Mode of replication
-        Motility: Whether the organism can move and how
-        Biochemical Tests: "Tests used for identification
-        Environmental Resistance: Ability to withstand environmental stresses
-        Public Health Impact: Importance to public health
-        Isolation Sources: Typical specimens from which the organism is isolated
-        Antibiotics Sensitivity: List of sensitive antibiotics
-        Antibiotic Resistance: List of resistant antibiotics
+        NB: Ensure to return the information in a beautifully formatted markdown, with each field on a new line.
+
+Ensure to return:
+
+**Confidence:** Accuracy of your prediction in %  
+**Imaging Type:** Microorganism  
+**Prediction:** Name of the organism, biological entity, or type of medical imaging  
+**MetaInfo:**
+- **Species:** The species of the organism  
+- **Domain:** The domain of the organism (Bacteria, Archaea, or Eukarya)  
+- **Disease(s):** The disease(s) it causes, if any  
+- **Transmission:** How the organism is transmitted  
+- **Diagnosis:** Methods used to diagnose the diseases caused by the organism  
+- **Symptoms:** Common symptoms of the diseases  
+- **Treatment:** Drugs and treatments for the diseases  
+- **Prevention:** Methods to prevent infection or spread  
+- **Habitat:** The natural environment or typical location where the organism is found  
+- **Morphology:** Physical structure and form of the organism  
+- **Size:** Dimensions of the organism, often in micrometers  
+- **Shape:** Form of the organism  
+- **Oxygen Requirement:** Whether the organism is aerobic, anaerobic, or facultative anaerobe  
+- **Growth Temperature:** Optimal temperature range for growth  
+- **Colony Characteristics:** Appearance of colonies on culture media  
+- **Virulence Factors:** Molecules produced by pathogens contributing to the pathogenicity  
+- **Genome Size:** Size of the organism's genome  
+- **GC Content:** Percentage of guanine and cytosine in the DNA  
+- **Replication:** Mode of replication  
+- **Motility:** Whether the organism can move and how  
+- **Biochemical Tests:** Tests used for identification  
+- **Environmental Resistance:** Ability to withstand environmental stresses  
+- **Public Health Impact:** Importance to public health  
+- **Isolation Sources:** Typical specimens from which the organism is isolated  
+- **Antibiotics Sensitivity:** List of sensitive antibiotics  
+- **Antibiotic Resistance:** List of resistant antibiotics  
 
 """
         response = vision_model.generate_content([prompt,image])
