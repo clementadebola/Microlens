@@ -187,6 +187,13 @@ const AnimatedIllustration = styled.div`
   color: ${(props) => props.theme.colors.onPrimary};
   animation: ${floatAnimation} 6s ease-in-out infinite;
   box-shadow: 0 10px 20px rgba(134, 144, 252, 0.3);
+
+  .dnaImg{
+  width:350px;
+  @media(max-width:767px){
+  width:300px;
+  }
+  }
 `;
 
 const BackgroundParticle = styled.div`
@@ -470,7 +477,7 @@ const Landing = () => {
 
           <IllustrationContainer style={illustrationAnimation}>
             <AnimatedIllustration>
-              <img width={"300px"} src={DnaIcon} alt="DNA Icon" />
+              <img className="dnaImg" src={DnaIcon} alt="DNA Icon" />
             </AnimatedIllustration>
           </IllustrationContainer>
 

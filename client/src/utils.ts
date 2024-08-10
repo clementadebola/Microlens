@@ -32,15 +32,26 @@ export function removeAsterisks(text: string): string {
 }
 
 export function extractPrediction(markdown: string): string | null {
-  const predictionRegex = /\*\*Prediction:\*\* \*(.*?)\*/;
-  const match = markdown.match(predictionRegex);
-  
-  if (match && match[1]) {
-    return match[1];
+
+  const singleLineMarkdown = markdown.replace(/\n/g, ' ');
+
+  const patterns = [
+    /\*\*Prediction:\*\*\s*\*(.*?)\*/i,
+    /\*\*Organism:\*\*\s*(.*?)(?:\s+\*\*|$)/i,
+    /\*\*prediction:\*\*\s*(.*?)(?:\s+\*\*|$)/i,
+    /\*\*Species:\*\*\s*(.*?)(?:\s+\*\*|$)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = singleLineMarkdown.match(pattern);
+    if (match && match[1]) {
+      return match[1].trim();
+    }
   }
-  
   return null;
 }
+
+
 export const resizeImage = (
   imageDataUrl: string,
   maxWidth: number,

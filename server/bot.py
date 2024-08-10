@@ -10,9 +10,8 @@ def respond_to_query(query: str, image: str,is_concise: bool = False, lang:str =
         prompt = """
         NB: Ensure to return the information in a beautifully formatted markdown, with each field on a new line
         
-        For the provided microorganism image, follow these steps:
-        
         Ensure to return:
+        
     confidence: Accuracy of your prediction in % 
     Imaging Type:  Microorganism
     prediction: Name of the organism, biological entity, or type of medical imaging,

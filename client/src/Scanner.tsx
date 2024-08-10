@@ -16,8 +16,8 @@ import { IoIosFlashOff, IoIosFlash } from "react-icons/io";
 import toast from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
 import { axiosInstance, extractPrediction } from "./utils";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useNavigate } from "react-router-dom";
 import Bot from "./bot/main";
 import { IScannedResult } from "./types";
@@ -329,6 +329,45 @@ const SettingInput = styled.input`
   border: 1px solid ${(props) => props.theme.colors.primary};
 `;
 
+const MarkdownContent = styled.div`
+  font-size: 14px;
+  line-height: 1.4;
+  width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  padding-left:5px;
+
+  p {
+    margin-bottom: 8px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin-top: 12px;
+    margin-bottom: 8px;
+  }
+
+  code {
+    font-size: 12px;
+    background-color: #e8e8e8;
+    padding: 2px 4px;
+    border-radius: 4px;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-x: auto;
+  }
+`;
+
 const Scanner: React.FC = () => {
   const { currentUser } = useAuth();
   const [isScanning, setIsScanning] = useState(true);
@@ -535,7 +574,7 @@ const Scanner: React.FC = () => {
           image,
         }
       );
-      console.log(data)
+      console.log(data);
       setResultLoading(false);
       const response = {
         prediction: data.prediction,
@@ -775,36 +814,41 @@ const Scanner: React.FC = () => {
               )}
 
               {!resultLoading ? (
-                <div style={{paddingLeft:'5px'}}>
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {scannedResult.prediction}
-                  </ReactMarkdown>
-                  {!scannedResult.prediction.includes('Invalid') && <button
-                    disabled={resultSaveLoading}
-                    onClick={() => {
-                      !capturedImage && scannedResult?.image
-                        ? removeFromHistory(scannedResult?.id)
-                        : saveToHistory(scannedResult);
-                    }}
-                    style={{
-                      width: "100%",
-                      alignSelf: "center",
-                      cursor: "pointer",
-                      padding: "10px 20px",
-                      borderRadius: "12px",
-                      background: "#8690fc",
-                      color: "#fff",
-                    }}
-                  >
-                    {resultSaveLoading ? (
-                      <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-                    ) : !capturedImage && scannedResult?.image ? (
-                      t("Unsave")
-                    ) : (
-                      t("Save")
-                    )}
-                  </button>}
-                </div>
+                <>
+                  <MarkdownContent>
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {scannedResult.prediction}
+                    </ReactMarkdown>
+                  </MarkdownContent>
+
+                  {!scannedResult.prediction.includes("Invalid") && (
+                    <button
+                      disabled={resultSaveLoading}
+                      onClick={() => {
+                        !capturedImage && scannedResult?.image
+                          ? removeFromHistory(scannedResult?.id)
+                          : saveToHistory(scannedResult);
+                      }}
+                      style={{
+                        width: "100%",
+                        alignSelf: "center",
+                        cursor: "pointer",
+                        padding: "10px 20px",
+                        borderRadius: "12px",
+                        background: "#8690fc",
+                        color: "#fff",
+                      }}
+                    >
+                      {resultSaveLoading ? (
+                        <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
+                      ) : !capturedImage && scannedResult?.image ? (
+                        t("Unsave")
+                      ) : (
+                        t("Save")
+                      )}
+                    </button>
+                  )}
+                </>
               ) : (
                 <div
                   style={{
