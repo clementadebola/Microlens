@@ -31,107 +31,15 @@ export function removeAsterisks(text: string): string {
   return text.replace(/\*/g, "").trim();
 }
 
-export function parseMicroorganismInfo(
-  text: any
-): Partial<MicroorganismInfo> {
-  if (!text || !text.metaInfo) return {};
-
-  const metaInfo = text.metaInfo;
-
-  const info: Partial<MicroorganismInfo> = {};
-
-  Object.entries(metaInfo).forEach(([key, value]) => {
-    const processedValue = typeof value === 'string' ? value.trim() : value;
-
-    switch (key.toLowerCase()) {
-      case "name":
-        info.name = processedValue;
-        break;
-      case "species":
-        info.species = processedValue;
-        break;
-      case "domain":
-        info.domain = processedValue;
-        break;
-      case "disease(s)":
-        info.diseases = processedValue;
-        break;
-      case "transmission":
-        info.transmission = processedValue;
-        break;
-      case "diagnosis":
-        info.diagnosis = processedValue;
-        break;
-      case "symptoms":
-        info.symptoms = processedValue;
-        break;
-      case "treatment":
-        info.treatment = processedValue;
-        break;
-      case "prevention":
-        info.prevention = processedValue;
-        break;
-      case "habitat":
-        info.habitat = processedValue;
-        break;
-      case "morphology":
-        info.morphology = processedValue;
-        break;
-      case "size":
-        info.size = processedValue;
-        break;
-      case "elevation":
-        info.elevation = processedValue;
-        break;
-      case "shape":
-        info.shape = processedValue;
-        break;
-      case "oxygen requirement":
-        info.oxygenRequirement = processedValue;
-        break;
-      case "growth temperature":
-        info.growthTemperature = processedValue;
-        break;
-      case "colony characteristics":
-        info.colonyCharacteristics = processedValue;
-        break;
-      case "antibiotic resistance":
-        info.antibioticResistance = processedValue;
-        break;
-      case "virulence factors":
-        info.virulenceFactors = processedValue;
-        break;
-      case "genome size":
-        info.genomeSize = processedValue;
-        break;
-      case "gc content":
-        info.gcContent = processedValue;
-        break;
-      case "replication":
-        info.replication = processedValue;
-        break;
-      case "motility":
-        info.motility = processedValue;
-        break;
-      case "biochemical tests":
-        info.biochemicalTests = processedValue;
-        break;
-      case "environmental resistance":
-        info.environmentalResistance = processedValue;
-        break;
-      case "public health impact":
-        info.publicHealthImpact = processedValue;
-        break;
-      case "isolation sources":
-        info.isolationSources = processedValue;
-        break;
-      case "antibiotics sensitivity":
-        info.antibioticSensitivity = processedValue;
-        break;
-    }
-  });
-
-  return info;
+export function extractPrediction(markdown: string): string | null {
+  const predictionRegex = /\*\*Prediction:\*\* \*(.*?)\*/;
+  const match = markdown.match(predictionRegex);
+  
+  if (match && match[1]) {
+    return match[1];
+  }
+  
+  return null;
 }
 export const resizeImage = (
   imageDataUrl: string,

@@ -57,26 +57,17 @@ def predict():
         img_data = data['image'].split(',')[1]  # Remove data URL prefix if present
         img_data = base64.b64decode(img_data)
         
-        # Open image using PIL
         img = Image.open(io.BytesIO(img_data))
         
         if img.mode != 'RGB':
             img = img.convert('RGB')
-            img = preprocess_image(img)
+            #img = preprocess_image(img)
         
         
         pred = respond_to_query(None,img, False)
     
-        cleaned_string = pred.strip('```json').strip()
-
-        cleaned_string = cleaned_string.strip('```')
-
-        data = json.loads(cleaned_string)
-      
         response = {
-            "prediction":data.get('prediction','N/A'),
-            "metaInfo": data,
-            "confidence":data.get('confidence','N/A'),
+            "prediction":pred,    
         }
         return jsonify(response)
     

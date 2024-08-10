@@ -15,14 +15,15 @@ import { MdPermMedia } from "react-icons/md";
 import { IoIosFlashOff, IoIosFlash } from "react-icons/io";
 import toast from "react-hot-toast";
 import { v4 as uuidv4 } from "uuid";
-import { axiosInstance } from "./utils";
-import OrganismDetails from "./OrganismDetails";
+import { axiosInstance, extractPrediction } from "./utils";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useNavigate } from "react-router-dom";
 import Bot from "./bot/main";
 import { IScannedResult } from "./types";
 import { useAuth } from "./context/authContext";
 import localforage from "localforage";
-import Div100vh from 'react-div-100vh'
+import Div100vh from "react-div-100vh";
 import useLanguage from "./context/langContext";
 
 const Container = styled.div`
@@ -166,7 +167,8 @@ const ProgressPath = styled.circle<{ $duration: number }>`
   stroke-linecap: round;
   stroke-dasharray: 283;
   stroke-dashoffset: 283;
-  animation: ${progressAnimation} ${(props) => props.$duration}ms linear forwards;
+  animation: ${progressAnimation} ${(props) => props.$duration}ms linear
+    forwards;
 `;
 
 const ResultImage = styled.img`
@@ -193,23 +195,23 @@ const CloseButton = styled(IconButton)`
   color: #ffffff;
   font-size: 18px;
   margin-top: 5px;
-  margin-bottom:10px;
+  margin-bottom: 10px;
   z-index: 1001;
 `;
 const CloseButtonH = styled.button`
-position:absolute;
-z-index:50;
-width: 30px;
-height: 30px;
-display: flex;
-align-items: center;
-justify-content: center;
-background-color: transparent;
-cursor: pointer;
-color: #ffffff;
-font-size: 18px;
-margin-top: 10px;
-margin-bottom: 20px;
+  position: absolute;
+  z-index: 50;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: transparent;
+  cursor: pointer;
+  color: #ffffff;
+  font-size: 18px;
+  margin-top: 10px;
+  margin-bottom: 20px;
 `;
 const TriggerCont = styled.div`
   position: absolute;
@@ -330,7 +332,9 @@ const SettingInput = styled.input`
 const Scanner: React.FC = () => {
   const { currentUser } = useAuth();
   const [isScanning, setIsScanning] = useState(true);
-  const [scannedResult, setScannedResult] = useState<IScannedResult | null>(null);
+  const [scannedResult, setScannedResult] = useState<IScannedResult | null>(
+    null
+  );
   const [capturedImage, setCapturedImage] = useState<string>("");
   const [showResult, setShowResult] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -346,12 +350,9 @@ const Scanner: React.FC = () => {
   const [resultSaveLoading, setResultSaveLoading] = useState(false);
   const { t } = useLanguage();
 
-  
-
   const videoRef = useRef<HTMLVideoElement>(null);
   const navigate = useNavigate();
   const STORAGE_KEY = "scanHistory";
-
 
   useEffect(() => {
     if (!currentUser?.email) {
@@ -430,7 +431,7 @@ const Scanner: React.FC = () => {
     reader.onload = async () => {
       if (reader.readyState === 2) {
         setCapturedImage(reader.result as string);
-        reader.result && await analyze(reader.result as string);
+        reader.result && (await analyze(reader.result as string));
       }
     };
 
@@ -534,9 +535,10 @@ const Scanner: React.FC = () => {
           image,
         }
       );
+      console.log(data)
       setResultLoading(false);
       const response = {
-        ...data,
+        prediction: data.prediction,
         id: uuidv4(),
         timestamp: new Date(),
       };
@@ -622,253 +624,246 @@ const Scanner: React.FC = () => {
   });
 
   return (
-
     <Div100vh>
-<Container>
-      {isScanning && !showSettings && !showHistory ? (
-        <CameraView>
-          <CloseButtonH onClick={() => navigate("/dashboard")}>
-            <FaArrowLeft color="#ccc" size={22} />
-          </CloseButtonH>
-          <Video ref={videoRef} autoPlay playsInline />
-          <ScannerFocus>
-            <TopLeft />
-            <TopRight />
-            <BottomLeft />
-            <BottomRight />
-          </ScannerFocus>
-          <TriggerCont>
-            <div className="trigger-btn-wrap">
-              <TriggerButton onClick={() => setShowModal(true)}>
-                <FaInfoCircle size={22} />
-              </TriggerButton>
-              <TriggerButton onClick={() => setShowHistory(true)}>
-                <FaSearch size={20} />
-              </TriggerButton>
-              <TriggerButton onClick={toggleFlash}>
-                {isFlashEnabled ? (
-                  <IoIosFlash size={22} />
-                ) : (
-                  <IoIosFlashOff size={22} />
-                )}
-              </TriggerButton>
-            </div>
-          </TriggerCont>
-          <ControlsContainer>
-            <IconButton>
-              <label htmlFor="fileSelect">
-                <MdPermMedia />
-              </label>
-            </IconButton>
-            <input
-              type="file"
-              hidden
-              id="fileSelect"
-              accept="image/*"
-              onChange={handleFileSelect}
-            />
-            <CaptureButtonContainer>
-              <CaptureButton onClick={startFocusing}>
-                <FaCamera />
-              </CaptureButton>
-              {isAnimating && (
-                <ProgressCircle viewBox="0 0 100 100">
-                  <ProgressPath
-                    cx="50"
-                    cy="50"
-                    r="45"
-                    fill="none"
-                    $duration={autoScanInterval}
-                  />
-                </ProgressCircle>
-              )}
-            </CaptureButtonContainer>
-            <IconButton onClick={() => setShowSettings(true)}>
-              <FaCog />
-            </IconButton>
-          </ControlsContainer>
-        </CameraView>
-      ) : null}
-
-      <AnimatedPage style={settingsAnimation}>
-        {showSettings && (
-          <>
-            <CloseButton onClick={() => setShowSettings(false)}>
-              <FaTimes />
-            </CloseButton>
-            <h2>{t('Settings')}</h2>
-            <SettingItem>
-              <SettingLabel>{t('Auto-scan interval (ms)')}</SettingLabel>
-              <SettingInput
-                type="number"
-                value={autoScanInterval}
-                onChange={(e) =>
-                  setAutoScanInterval(parseInt(e.target.value))
-                }
+      <Container>
+        {isScanning && !showSettings && !showHistory ? (
+          <CameraView>
+            <CloseButtonH onClick={() => navigate("/dashboard")}>
+              <FaArrowLeft color="#ccc" size={22} />
+            </CloseButtonH>
+            <Video ref={videoRef} autoPlay playsInline />
+            <ScannerFocus>
+              <TopLeft />
+              <TopRight />
+              <BottomLeft />
+              <BottomRight />
+            </ScannerFocus>
+            <TriggerCont>
+              <div className="trigger-btn-wrap">
+                <TriggerButton onClick={() => setShowModal(true)}>
+                  <FaInfoCircle size={22} />
+                </TriggerButton>
+                <TriggerButton onClick={() => setShowHistory(true)}>
+                  <FaSearch size={20} />
+                </TriggerButton>
+                <TriggerButton onClick={toggleFlash}>
+                  {isFlashEnabled ? (
+                    <IoIosFlash size={22} />
+                  ) : (
+                    <IoIosFlashOff size={22} />
+                  )}
+                </TriggerButton>
+              </div>
+            </TriggerCont>
+            <ControlsContainer>
+              <IconButton>
+                <label htmlFor="fileSelect">
+                  <MdPermMedia />
+                </label>
+              </IconButton>
+              <input
+                type="file"
+                hidden
+                id="fileSelect"
+                accept="image/*"
+                onChange={handleFileSelect}
               />
-            </SettingItem>
-          </>
-        )}
-      </AnimatedPage>
+              <CaptureButtonContainer>
+                <CaptureButton onClick={startFocusing}>
+                  <FaCamera />
+                </CaptureButton>
+                {isAnimating && (
+                  <ProgressCircle viewBox="0 0 100 100">
+                    <ProgressPath
+                      cx="50"
+                      cy="50"
+                      r="45"
+                      fill="none"
+                      $duration={autoScanInterval}
+                    />
+                  </ProgressCircle>
+                )}
+              </CaptureButtonContainer>
+              <IconButton onClick={() => setShowSettings(true)}>
+                <FaCog />
+              </IconButton>
+            </ControlsContainer>
+          </CameraView>
+        ) : null}
 
-      <AnimatedPage style={historyAnimation}>
-        {showHistory && (
-          <>
-            <CloseButton onClick={() => setShowHistory(false)}>
-              <FaArrowLeft />
-            </CloseButton>
-            <h2>{t('Scan History')}</h2>
-            <SearchBar
-              type="search"
-              placeholder={t("Search history...")}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-            {scanHistory.length > 0 ? (
-              scanHistory.map((scan: IScannedResult) => (
-                <HistoryItem key={scan?.id}>
-                  <HistoryImage
-                    onClick={() => {
-                      setScannedResult(scan);
-                      setShowResult(true);
-                    }}
-                    src={scan?.image}
-                    alt={scan?.image || scan?.prediction}
-                  />
-                  <div>
-                    <h4
+        <AnimatedPage style={settingsAnimation}>
+          {showSettings && (
+            <>
+              <CloseButton onClick={() => setShowSettings(false)}>
+                <FaTimes />
+              </CloseButton>
+              <h2>{t("Settings")}</h2>
+              <SettingItem>
+                <SettingLabel>{t("Auto-scan interval (ms)")}</SettingLabel>
+                <SettingInput
+                  type="number"
+                  value={autoScanInterval}
+                  onChange={(e) =>
+                    setAutoScanInterval(parseInt(e.target.value))
+                  }
+                />
+              </SettingItem>
+            </>
+          )}
+        </AnimatedPage>
+
+        <AnimatedPage style={historyAnimation}>
+          {showHistory && (
+            <>
+              <CloseButton onClick={() => setShowHistory(false)}>
+                <FaArrowLeft />
+              </CloseButton>
+              <h2>{t("Scan History")}</h2>
+              <SearchBar
+                type="search"
+                placeholder={t("Search history...")}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              {scanHistory.length > 0 ? (
+                scanHistory.map((scan: IScannedResult) => (
+                  <HistoryItem key={scan?.id}>
+                    <HistoryImage
                       onClick={() => {
                         setScannedResult(scan);
                         setShowResult(true);
                       }}
-                    >
-                      {scan?.prediction}
-                    </h4>
-                    <p style={{ fontSize: "10px", color: "grey" }}>
-                      {new Date(scan?.timestamp).toLocaleString()}
-                    </p>
-                  </div>
-                  <RemoveButton onClick={() => removeFromHistory(scan?.id)}>
-                    <FaTrash size={12} />
-                  </RemoveButton>
-                </HistoryItem>
-              ))
-            ) : (
-              <p>{t('No history found')}!</p>
-            )}
-          </>
-        )}
-      </AnimatedPage>
+                      src={scan?.image}
+                    />
+                    <div>
+                      <h4
+                        onClick={() => {
+                          setScannedResult(scan);
+                          setShowResult(true);
+                        }}
+                      >
+                        {extractPrediction(scan?.prediction)}
+                      </h4>
+                      <p style={{ fontSize: "10px", color: "grey" }}>
+                        {new Date(scan?.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                    <RemoveButton onClick={() => removeFromHistory(scan?.id)}>
+                      <FaTrash size={12} />
+                    </RemoveButton>
+                  </HistoryItem>
+                ))
+              ) : (
+                <p>{t("No history found")}!</p>
+              )}
+            </>
+          )}
+        </AnimatedPage>
 
-      <AnimatedPage style={resultsAnimation}>
-        {showResult && (
-          <>
-            <CloseButton onClick={resetScanner}>
-              <FaTimes />
-            </CloseButton>
+        <AnimatedPage style={resultsAnimation}>
+          {showResult && (
+            <>
+              <CloseButton onClick={resetScanner}>
+                <FaTimes />
+              </CloseButton>
 
-            {(capturedImage !== "" || scannedResult?.image !== "") && (
-              <ResultImage
-                src={capturedImage || scannedResult?.image}
-                alt="Scanned object"
-              />
-            )}
+              {(capturedImage !== "" || scannedResult?.image !== "") && (
+                <ResultImage
+                  src={capturedImage || scannedResult?.image}
+                  alt="Scanned object"
+                />
+              )}
 
-            {!resultLoading ? (
-              <>
-                <ResultTitle>{Array.isArray(scannedResult?.prediction)?scannedResult?.prediction[0]:scannedResult?.prediction}</ResultTitle>
-                <p
+              {!resultLoading ? (
+                <div style={{paddingLeft:'5px'}}>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {scannedResult.prediction}
+                  </ReactMarkdown>
+                  {!scannedResult.prediction.includes('Invalid') && <button
+                    disabled={resultSaveLoading}
+                    onClick={() => {
+                      !capturedImage && scannedResult?.image
+                        ? removeFromHistory(scannedResult?.id)
+                        : saveToHistory(scannedResult);
+                    }}
+                    style={{
+                      width: "100%",
+                      alignSelf: "center",
+                      cursor: "pointer",
+                      padding: "10px 20px",
+                      borderRadius: "12px",
+                      background: "#8690fc",
+                      color: "#fff",
+                    }}
+                  >
+                    {resultSaveLoading ? (
+                      <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
+                    ) : !capturedImage && scannedResult?.image ? (
+                      t("Unsave")
+                    ) : (
+                      t("Save")
+                    )}
+                  </button>}
+                </div>
+              ) : (
+                <div
                   style={{
-                    fontSize: "11px",
-                    color: "grey",
-                    fontWeight: "1000",
+                    marginTop: "70px",
+                    gap: "4px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
-                  Confidence: {Array.isArray(scannedResult?.confidence)?scannedResult?.confidence[0]:scannedResult?.confidence}
-                </p>
-                <OrganismDetails
-                  res={scannedResult?.metaInfo}
-                ></OrganismDetails>
-                <button
-                  disabled={resultSaveLoading}
-                  onClick={() => {
-                    !capturedImage && scannedResult?.image
-                      ? removeFromHistory(scannedResult?.id)
-                      : saveToHistory(scannedResult);
-                  }}
-                  style={{
-                    width: "100%",
-                    alignSelf: "center",
-                    cursor: "pointer",
-                    padding: "10px 20px",
-                    borderRadius: "12px",
-                    background: "#8690fc",
-                    color: "#fff",
-                  }}
-                >
-                  {resultSaveLoading ? (
-                    <l-mirage size="60" speed="2.5" color="#fff"></l-mirage>
-                  ) : !capturedImage && scannedResult?.image ? (
-                    t("Unsave")
-                  ) : (
-                    t("Save")
-                  )}
-                </button>
-              </>
-            ) : (
-              <div
+                  <l-helix size="90" speed="2.5" color="#ffffff"></l-helix>
+                  <p style={{ color: "#fff", fontFamily: "monospace" }}>
+                    Analysing<span className="dots_loader"></span>
+                  </p>
+                </div>
+              )}
+            </>
+          )}
+        </AnimatedPage>
+
+        {showModal && (
+          <Modal>
+            <ModalContent>
+              <CloseButton onClick={() => setShowModal(false)}>
+                <FaTimes />
+              </CloseButton>
+              <h3>{t("How to Scan")} 🔍</h3>
+              <ul
                 style={{
-                  marginTop: "70px",
-                  gap: "4px",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
+                  listStyle: "roman",
+                  padding: "5px 10px",
+                  fontSize: "14px",
                 }}
               >
-                <l-helix size="90" speed="2.5" color="#ffffff"></l-helix>
-                <p style={{ color: "#fff", fontFamily: "monospace" }}>
-                  Analysing<span className="dots_loader"></span>
+                <h3>#{t("Option 1")}</h3>
+                <li>{t("Point the camera at an object you want to scan")}.</li>
+                <li>
+                  {t("Tap the camera button to capture and analyze the image")}.
+                </li>
+                <li>{t("View the scan results and save them if desired")}.</li>
+                <li>
+                  {t("Access your scan history using the search button")}.
+                </li>
+                <li>{t("Adjust settings using the gear icon")}.</li>
+                <h3>#{t("Option 2")}</h3>
+                <p>
+                  {t(
+                    "Click on the image icon; left to the camera button to select an image from your gallery to scan"
+                  )}
+                  .
                 </p>
-              </div>
-            )}
-          </>
+              </ul>
+            </ModalContent>
+          </Modal>
         )}
-      </AnimatedPage>
-
-      {showModal && (
-        <Modal>
-          <ModalContent>
-            <CloseButton onClick={() => setShowModal(false)}>
-              <FaTimes />
-            </CloseButton>
-            <h3>{t('How to Scan')} 🔍</h3>
-            <ul
-              style={{
-                listStyle: "roman",
-                padding: "5px 10px",
-                fontSize: "14px",
-              }}
-            >
-              <h3>#{t('Option 1')}</h3>
-              <li>{t('Point the camera at an object you want to scan')}.</li>
-              <li>{t('Tap the camera button to capture and analyze the image')}.</li>
-              <li>{t('View the scan results and save them if desired')}.</li>
-              <li>{t('Access your scan history using the search button')}.</li>
-              <li>{t('Adjust settings using the gear icon')}.</li>
-              <h3>#{t('Option 2')}</h3>
-              <p>
-                {t('Click on the image icon; left to the camera button to select an image from your gallery to scan')}.
-              </p>
-            </ul>
-          </ModalContent>
-        </Modal>
-      )}
-      <Bot />
-    </Container>
-
+        <Bot />
+      </Container>
     </Div100vh>
-    
   );
 };
 

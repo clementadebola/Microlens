@@ -38,10 +38,8 @@ export interface FormData {
 export interface IScannedResult {
   id: string;
   prediction: string;
-  image: string;
   timestamp: number;
-  metaInfo: string;
-  confidence: number;
+  image?: string;
 }
 
 
