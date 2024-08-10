@@ -295,7 +295,7 @@ const Dashboard: React.FC = () => {
             <img src={diagnoseIcon} width={45} />
             {t("Diagnose Me")}
           </DashboardButton>
-          <DashboardButton to="/scan" style={{ background: "#6C6D1B" }}>
+          <DashboardButton to="/scan" style={{ background: "#3B3F70" }}>
             <img src={scanIcon} width={45} /> {t("Scan")}
           </DashboardButton>
           <DashboardButton to="/quiz" style={{ background: "#0F7536" }}>

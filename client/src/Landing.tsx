@@ -17,6 +17,7 @@ import DnaIcon from "./assets/DNA.png";
 import DrugIcon from "./assets/prescription_and_pills.png";
 import ViralIcon from "./assets/viral.png";
 import { useAuth } from "./context/authContext";
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const GlobalStyle = createGlobalStyle`
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
@@ -58,8 +59,7 @@ const HeroMotto = styled.div`
   font-size: 10px;
   font-family: mono-space;
   color: #ccc;
-   font-style: italic;
-  
+  font-style: italic;
 `;
 const Header = styled(animated.header)`
   ${glassEffect}
@@ -83,11 +83,10 @@ const HeroSection = styled.section`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 100vh;
+  min-height: 100vh;
   padding: ${(props) => props.theme.spacing.xlarge}
     ${(props) => props.theme.spacing.large};
   position: relative;
-  overflow: hidden;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -311,7 +310,7 @@ const Landing = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
   if (currentUser?.email) {
-    navigate("/dashboard");
+    // navigate("/dashboard");
   }
   const [aiFeatures] = useState([
     "Advanced sample image recognition 🔍",
@@ -412,45 +411,64 @@ const Landing = () => {
         <Header style={headerAnimation}>
           <Logo src={logo} alt="Logo" />
           <div
-            title="Login"
             style={{
               display: "flex",
               borderRadius: "8px",
               padding: "5px",
-              background: "rgba(12, 16, 35, 0.8)",
               cursor: "pointer",
             }}
             onClick={() => navigate("/auth")}
           >
-            {" "}
-            <BiLogIn size={26} fill="#ccc" />
+            {currentUser?.email ? (
+              <LuLayoutDashboard
+                onClick={() => navigate("/dashboard")}
+                size={24}
+              />
+            ) : (
+              <BiLogIn
+                onClick={() => navigate("/auth")}
+                size={24}
+                fill="#ccc"
+              />
+            )}
           </div>
         </Header>
 
         <HeroSection>
           <HeroContent>
+            <AnimatedIllustration
+              style={{ width: "80px", height: "80px", position: "absolute" }}
+            >
+              <img width={"80%"} src={DrugIcon} alt="Drug Icon" />
+            </AnimatedIllustration>
             <HeroMotto>Illuminating insignts...</HeroMotto>
             <HeroTitle style={heroContentAnimation}>
               Revolutionizing Medical Diagnostics
             </HeroTitle>
-            <AnimatedIllustration
-              style={{ width: "150px", height: "150px", position: "absolute" }}
-            >
-              <img width={"80%"} src={DrugIcon} alt="Drug Icon" />
-            </AnimatedIllustration>
+
             <HeroDescription style={heroContentAnimation}>
               Microlens uses Gemini to provide accurate diagnoses,
               microorganisms identification and health education for healthcare
               professionals and individuals alike.
             </HeroDescription>
 
-            <CTAButton
-              title="Get Started"
-              style={ctaButtonAnimation}
-              onClick={() => navigate("/auth")}
-            >
-              Get Started <FaArrowRight />
-            </CTAButton>
+            {currentUser?.email ? (
+              <CTAButton
+                title="Go to Dashboard"
+                style={ctaButtonAnimation}
+                onClick={() => navigate("/dashboard")}
+              >
+                Go to Dashboard <LuLayoutDashboard />
+              </CTAButton>
+            ) : (
+              <CTAButton
+                title="Get Started"
+                style={ctaButtonAnimation}
+                onClick={() => navigate("/auth")}
+              >
+                Get Started <FaArrowRight />
+              </CTAButton>
+            )}
           </HeroContent>
 
           <IllustrationContainer style={illustrationAnimation}>
@@ -470,11 +488,19 @@ const Landing = () => {
               delay={Math.random() * 2}
             />
           ))}
-        </HeroSection>
 
-        <AnimatedIllustration style={{ width: "200px", height: "200px" }}>
-          <img width={"200px"} src={ViralIcon} alt="Viral Icon" />
-        </AnimatedIllustration>
+          <AnimatedIllustration
+            style={{
+              width: "150px",
+              height: "150px",
+              position: "absolute",
+              left: "0px",
+              bottom: "-80px",
+            }}
+          >
+            <img width={"150px"} src={ViralIcon} alt="Viral Icon" />
+          </AnimatedIllustration>
+        </HeroSection>
 
         <FeaturesSection id="features">
           <FeatureCardContainer
