@@ -309,9 +309,7 @@ const Footer = styled.footer`
 const Landing = () => {
   const navigate = useNavigate();
   const { currentUser } = useAuth();
-  if (currentUser?.email) {
-    // navigate("/dashboard");
-  }
+
   const [aiFeatures] = useState([
     "Advanced sample image recognition 🔍",
     "Natural language processing 🗣️",
