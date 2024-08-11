@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useSpring, animated } from "react-spring";
 import Message from "./Message";
 import boDoc from "../assets/boDoc.png";
@@ -157,6 +157,31 @@ const OptionButton = styled.button`
     transform: scale(1.05);
   }
 `;
+
+const rippleEffect = keyframes`
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 15px rgba(52, 152, 219, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 152, 219, 0);
+  }
+`;
+
+const bounceEffect = keyframes`
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+`;
+
 const CollapsedButton = styled.button`
   position: fixed;
   bottom: 100px;
@@ -172,6 +197,9 @@ const CollapsedButton = styled.button`
   gap: 3px;
   font-size: 11px;
   cursor: pointer;
+  animation: ${rippleEffect} 1.5s infinite,
+    ${bounceEffect} 2s ease-in-out infinite;
+  pointer-events: auto;
   transition: all 0.3s ease;
 
   @media (max-width: 768px) {

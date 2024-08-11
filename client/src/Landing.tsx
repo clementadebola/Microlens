@@ -334,9 +334,9 @@ const Landing = () => {
     },
     {
       icon: <FaDna />,
-      title: "Bacterial Identification",
+      title: "Microorganism Identification",
       description:
-        "Quickly identify bacteria from samples with high precision.",
+        "Quickly identify bacteria, virus, protozoa, helminths and even microfilaria from samples with high precision.",
     },
     {
       icon: <FaQuestionCircle />,
