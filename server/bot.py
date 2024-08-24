@@ -44,6 +44,8 @@ Ensure to return:
 - **Antibiotics Sensitivity:** List of sensitive antibiotics  
 - **Antibiotic Resistance:** List of resistant antibiotics  
 
+ And if the provided image isnt a microscopic image of a microorganism, simply provide a guidance on which image to provide.
+
 """
         response = vision_model.generate_content([prompt,image])
     else:
