@@ -27,7 +27,7 @@ The following technologies were used in the development of Microlens:
   - Gemini Benchmark
 
 - **Database:**
-  - MongoDB
+  - Firebase
 
 - **Other Tools:**
   - Docker
